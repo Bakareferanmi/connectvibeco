@@ -1,0 +1,113 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import { Search as SearchIcon } from "lucide-react";
+import TicketCard from "@/components/TicketCard";
+import TripCard from "@/components/TripCard";
+import Footer from "@/components/Footer";
+import { EVENTS, TRIPS } from "@/lib/data";
+
+export default function SearchPage() {
+  const [query, setQuery] = useState("");
+
+  const matchedEvents = useMemo(() => {
+    if (query.trim() === "") return [];
+    const q = query.toLowerCase();
+    return EVENTS.filter(
+      (e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.location.toLowerCase().includes(q) ||
+        e.category.toLowerCase().includes(q)
+    );
+  }, [query]);
+
+  const matchedTrips = useMemo(() => {
+    if (query.trim() === "") return [];
+    const q = query.toLowerCase();
+    return TRIPS.filter(
+      (t) =>
+        t.title.toLowerCase().includes(q) ||
+        t.location.toLowerCase().includes(q)
+    );
+  }, [query]);
+
+  const hasQuery = query.trim() !== "";
+  const totalResults = matchedEvents.length + matchedTrips.length;
+
+  return (
+    <div className="min-h-screen bg-ink">
+      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
+        <a href="/" className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full border-2 border-fuchsia-500" style={{ boxShadow: "0 0 12px rgba(217,70,239,0.6)" }} />
+          <span className="font-display font-semibold tracking-tight">connect vibe</span>
+        </a>
+        <button className="text-[13px] font-medium bg-white text-black px-4 py-2 rounded-full">Sign up</button>
+      </nav>
+
+      <section className="max-w-3xl mx-auto px-6 pt-10 pb-8">
+        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
+          Search
+        </p>
+        <h1 className="font-display text-[32px] sm:text-[44px] font-semibold tracking-tight mb-8">
+          What are you looking for?
+        </h1>
+
+        <div className="relative">
+          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+          <input
+            type="text"
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search events and trips by name or location"
+            className="w-full bg-panel border border-white/10 rounded-full pl-11 pr-4 py-3 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
+          />
+        </div>
+      </section>
+
+      {hasQuery && (
+        <section className="max-w-6xl mx-auto px-6 pb-24">
+          <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-8">
+            {totalResults} {totalResults === 1 ? "result" : "results"} for &quot;{query}&quot;
+          </p>
+
+          {totalResults === 0 ? (
+            <div className="py-20 text-center">
+              <p className="text-white/50 text-[15px]">Nothing matches that search.</p>
+            </div>
+          ) : (
+            <>
+              {matchedEvents.length > 0 && (
+                <div className="mb-12">
+                  <h2 className="font-display text-[18px] font-semibold tracking-tight mb-5">
+                    Events
+                  </h2>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {matchedEvents.map((e) => (
+                      <TicketCard key={e.id} event={e} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {matchedTrips.length > 0 && (
+                <div>
+                  <h2 className="font-display text-[18px] font-semibold tracking-tight mb-5">
+                    Trips
+                  </h2>
+                  <div className="grid md:grid-cols-2 gap-5">
+                    {matchedTrips.map((t) => (
+                      <TripCard key={t.id} trip={t} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </section>
+      )}
+
+      <Footer />
+    </div>
+  );
+}
