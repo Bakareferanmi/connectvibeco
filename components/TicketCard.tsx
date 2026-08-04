@@ -10,7 +10,7 @@ const ACCENTS: Record<Accent, { text: string; hoverText: string }> = {
 export default function TicketCard({ event }: { event: EventListing }) {
   const a = ACCENTS[event.accent];
   return (
-    <div className="relative flex-shrink-0 w-[280px] rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors group">
+    <div className="relative w-full rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors group">
       <div className="p-5 pb-4">
         <div className="flex items-center justify-between mb-4">
           <span className={`text-[11px] tracking-[0.15em] uppercase font-mono ${a.text}`}>

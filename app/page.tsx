@@ -5,13 +5,7 @@ import TicketCard from "@/components/TicketCard";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
-import type { EventListing } from "@/lib/types";
-
-const EVENTS: EventListing[] = [
-  { id: "01", title: "Rooftop Sessions: Sunset Sounds", category: "Music", date: "Sat, Aug 8", time: "7:00 PM", location: "Shoreditch, London", spots: 12, price: "£15", accent: "magenta" },
-  { id: "02", title: "Peak District Weekend Hike", category: "Trip", date: "Fri, Aug 14", time: "2 days", location: "Peak District", spots: 4, price: "£85", accent: "teal" },
-  { id: "03", title: "Supper Club: Strangers & Stories", category: "Social", date: "Thu, Aug 6", time: "8:00 PM", location: "Hackney, London", spots: 3, price: "£28", accent: "violet" },
-];
+import { EVENTS } from "@/lib/data";
 
 const NAV_LINKS = ["Events", "Trips", "Membership"] as const;
 const TABS = ["nearby", "this week", "trips"] as const;
@@ -48,7 +42,7 @@ export default function HomePage() {
             Local meetups, weekend trips, and nights out. Vetted, bookable, and full of strangers worth meeting.
           </p>
           <div className="flex items-center gap-3 mt-8">
-            <button className="bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full">Browse events</button>
+            <a href="/events" className="bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full">Browse events</a>
             <button className="border border-white/20 hover:border-white/40 transition-colors text-white/80 text-[14px] font-medium px-6 py-3 rounded-full">How it works</button>
           </div>
         </div>
@@ -67,8 +61,10 @@ export default function HomePage() {
         </div>
 
         <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 sm:mx-0 sm:px-0">
-          {EVENTS.map((e) => (
-            <TicketCard key={e.id} event={e} />
+          {EVENTS.slice(0, 3).map((e) => (
+            <div key={e.id} className="w-[280px] flex-shrink-0">
+              <TicketCard event={e} />
+            </div>
           ))}
         </div>
       </section>
