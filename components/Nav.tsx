@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Search, ChevronDown } from "lucide-react";
+import { Search, ChevronDown, Menu, X } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import Avatar from "@/components/Avatar";
 import ProfileModal from "@/components/ProfileModal";
@@ -16,6 +16,7 @@ export default function Nav() {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <>
@@ -40,6 +41,18 @@ export default function Nav() {
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setMobileMenuOpen((v) => !v)}
+            aria-label="Menu"
+            className="sm:hidden w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+          >
+            {mobileMenuOpen ? (
+              <X className="w-4 h-4 text-white/70" />
+            ) : (
+              <Menu className="w-4 h-4 text-white/70" />
+            )}
+          </button>
+
           <Link
             href="/search"
             aria-label="Search"
@@ -98,6 +111,26 @@ export default function Nav() {
           )}
         </div>
       </nav>
+
+      {mobileMenuOpen && (
+        <div className="sm:hidden px-6 pb-5 -mt-2">
+          <div className="flex flex-col gap-1 rounded-xl bg-panel border border-white/10 overflow-hidden">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-3 text-[14px] text-white/70 hover:bg-white/5 transition-colors border-b border-white/5 last:border-b-0"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <span className="px-4 py-3 text-[14px] text-white/30 cursor-default">
+              Membership
+            </span>
+          </div>
+        </div>
+      )}
 
       {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}
     </>
