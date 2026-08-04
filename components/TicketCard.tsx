@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Calendar, MapPin, Users, ArrowUpRight, Heart } from "lucide-react";
 import type { EventListing, Accent } from "@/lib/types";
 import { useSaved } from "@/lib/useSaved";
+import AttendeeStack from "@/components/AttendeeStack";
 
 const ACCENTS: Record<Accent, { text: string; hoverText: string }> = {
   magenta: { text: "text-fuchsia-400", hoverText: "group-hover:text-fuchsia-400" },
@@ -40,7 +41,7 @@ export default function TicketCard({ event }: { event: EventListing }) {
         <h3 className="font-display font-semibold text-white text-[17px] leading-snug mb-4 pr-8">
           {event.title}
         </h3>
-        <div className="space-y-2 text-[13px] text-white/50">
+        <div className="space-y-2 text-[13px] text-white/50 mb-4">
           <div className="flex items-center gap-2">
             <Calendar className="w-3.5 h-3.5" />
             <span>{event.date} · {event.time}</span>
@@ -54,6 +55,7 @@ export default function TicketCard({ event }: { event: EventListing }) {
             <span>{event.spots} spots left</span>
           </div>
         </div>
+        <AttendeeStack seed={event.id} />
       </div>
 
       <div className="relative h-0 border-t border-dashed border-white/15">
