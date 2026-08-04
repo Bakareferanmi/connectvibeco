@@ -1,0 +1,100 @@
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { Calendar, MapPin, Users, ArrowLeft, Check } from "lucide-react";
+import Footer from "@/components/Footer";
+import { TRIPS } from "@/lib/data";
+import type { Accent } from "@/lib/types";
+
+const ACCENTS: Record<Accent, { text: string; bg: string }> = {
+  magenta: { text: "text-fuchsia-400", bg: "bg-fuchsia-500" },
+  teal: { text: "text-cyan-400", bg: "bg-cyan-500" },
+  violet: { text: "text-violet-400", bg: "bg-violet-500" },
+};
+
+export function generateStaticParams() {
+  return TRIPS.map((t) => ({ id: t.id }));
+}
+
+export function generateMetadata({ params }: { params: { id: string } }) {
+  const trip = TRIPS.find((t) => t.id === params.id);
+  if (!trip) return { title: "Trip not found, Connect Vibe Co" };
+  return { title: `${trip.title}, Connect Vibe Co`, description: trip.description };
+}
+
+export default function TripDetailPage({ params }: { params: { id: string } }) {
+  const trip = TRIPS.find((t) => t.id === params.id);
+  if (!trip) notFound();
+
+  const a = ACCENTS[trip.accent];
+
+  return (
+    <div className="min-h-screen bg-ink">
+      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
+        <a href="/" className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full border-2 border-fuchsia-500" style={{ boxShadow: "0 0 12px rgba(217,70,239,0.6)" }} />
+          <span className="font-display font-semibold tracking-tight">connect vibe</span>
+        </a>
+        <button className="text-[13px] font-medium bg-white text-black px-4 py-2 rounded-full">Sign up</button>
+      </nav>
+
+      <section className="max-w-3xl mx-auto px-6 pt-8 pb-24">
+        <Link href="/trips" className="inline-flex items-center gap-1.5 text-[13px] text-white/40 hover:text-white/70 transition-colors mb-8">
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Back to trips
+        </Link>
+
+        <div className={`h-1.5 w-16 rounded-full ${a.bg} mb-5`} />
+
+        <h1 className="font-display text-[32px] sm:text-[44px] font-semibold tracking-tight leading-[1.1] mb-6">
+          {trip.title}
+        </h1>
+
+        <div className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] text-white/60 mb-8">
+          <span className="flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            {trip.location}
+          </span>
+          <span className="flex items-center gap-2">
+            <Calendar className="w-4 h-4" />
+            {trip.dates}
+          </span>
+          <span className="flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            {trip.spots} spots left
+          </span>
+          <span className={`font-mono text-[11px] uppercase tracking-[0.15em] ${a.text}`}>
+            {trip.duration}
+          </span>
+        </div>
+
+        <p className="text-white/70 text-[15px] leading-relaxed max-w-xl mb-10">
+          {trip.description}
+        </p>
+
+        <h2 className="font-display text-[16px] font-semibold tracking-tight mb-4">
+          What's included
+        </h2>
+        <ul className="space-y-3 mb-10">
+          {trip.highlights.map((h) => (
+            <li key={h} className="flex items-start gap-3 text-[14px] text-white/70">
+              <Check className={`w-4 h-4 mt-0.5 flex-shrink-0 ${a.text}`} />
+              {h}
+            </li>
+          ))}
+        </ul>
+
+        <div className="flex items-center justify-between rounded-2xl bg-panel border border-white/10 p-6">
+          <div>
+            <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-1">Price per person</p>
+            <span className="font-mono text-white text-2xl">{trip.price}</span>
+          </div>
+          <button className="bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors">
+            Reserve your spot
+          </button>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
+  );
+}

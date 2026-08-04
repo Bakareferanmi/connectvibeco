@@ -10,6 +10,7 @@ export interface EventListing {
   spots: number;
   price: string;
   accent: Accent;
+  description: string;
 }
 
 export interface TripListing {
@@ -22,4 +23,5 @@ export interface TripListing {
   spots: number;
   highlights: string[];
   accent: Accent;
+  description: string;
 }

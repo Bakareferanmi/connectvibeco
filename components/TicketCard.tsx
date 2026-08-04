@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Calendar, MapPin, Users, ArrowUpRight } from "lucide-react";
 import type { EventListing, Accent } from "@/lib/types";
 
@@ -10,7 +11,10 @@ const ACCENTS: Record<Accent, { text: string; hoverText: string }> = {
 export default function TicketCard({ event }: { event: EventListing }) {
   const a = ACCENTS[event.accent];
   return (
-    <div className="relative w-full rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors group">
+    <Link
+      href={`/events/${event.id}`}
+      className="relative w-full rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors group block"
+    >
       <div className="p-5 pb-4">
         <div className="flex items-center justify-between mb-4">
           <span className={`text-[11px] tracking-[0.15em] uppercase font-mono ${a.text}`}>
@@ -44,12 +48,12 @@ export default function TicketCard({ event }: { event: EventListing }) {
 
       <div className="p-5 pt-4 flex items-center justify-between">
         <span className="font-mono text-white text-lg">{event.price}</span>
-        <button
+        <span
           className={`flex items-center gap-1 text-[13px] font-medium text-white/90 ${a.hoverText} transition-colors`}
         >
           Book spot <ArrowUpRight className="w-3.5 h-3.5" />
-        </button>
+        </span>
       </div>
-    </div>
+    </Link>
   );
 }

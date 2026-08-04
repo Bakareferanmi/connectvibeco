@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Calendar, MapPin, Users } from "lucide-react";
 import type { TripListing, Accent } from "@/lib/types";
 
@@ -10,7 +11,10 @@ const ACCENTS: Record<Accent, { text: string; bg: string }> = {
 export default function TripCard({ trip }: { trip: TripListing }) {
   const a = ACCENTS[trip.accent];
   return (
-    <div className="rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors">
+    <Link
+      href={`/trips/${trip.id}`}
+      className="block rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors"
+    >
       <div className={`h-1.5 ${a.bg}`} />
       <div className="p-6">
         <div className="flex items-start justify-between mb-4">
@@ -49,11 +53,11 @@ export default function TripCard({ trip }: { trip: TripListing }) {
 
         <div className="flex items-center justify-between pt-4 border-t border-white/10">
           <span className="font-mono text-white text-xl">{trip.price}</span>
-          <button className="bg-white text-black text-[13px] font-medium px-5 py-2.5 rounded-full hover:bg-white/90 transition-colors">
+          <span className="bg-white text-black text-[13px] font-medium px-5 py-2.5 rounded-full">
             Reserve your spot
-          </button>
+          </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
