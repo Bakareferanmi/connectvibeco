@@ -8,7 +8,8 @@ export interface User {
 }
 
 interface StoredUser extends User {
-  password: string;
+  password: string | null;
+  provider: "password" | "google";
 }
 
 interface AuthContextValue {
@@ -16,6 +17,7 @@ interface AuthContextValue {
   loading: boolean;
   signup: (name: string, email: string, password: string) => { success: boolean; error?: string };
   login: (email: string, password: string) => { success: boolean; error?: string };
+  loginWithGoogle: () => { success: boolean };
   logout: () => void;
 }
 
@@ -57,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (exists) {
       return { success: false, error: "An account with that email already exists." };
     }
-    const newUser: StoredUser = { name, email, password };
+    const newUser: StoredUser = { name, email, password, provider: "password" };
     saveUsers([...users, newUser]);
     const publicUser: User = { name, email };
     localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
@@ -68,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   function login(email: string, password: string) {
     const users = getUsers();
     const match = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+      (u) => u.email.toLowerCase() === email.toLowerCase() && u.provider === "password" && u.password === password
     );
     if (!match) {
       return { success: false, error: "Incorrect email or password." };
@@ -79,13 +81,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { success: true };
   }
 
+  function loginWithGoogle() {
+    const demoUser = { name: "Alex Rivera", email: "alex.rivera@gmail.com" };
+    const users = getUsers();
+    const exists = users.some((u) => u.email.toLowerCase() === demoUser.email.toLowerCase());
+    if (!exists) {
+      saveUsers([...users, { ...demoUser, password: null, provider: "google" }]);
+    }
+    localStorage.setItem(SESSION_KEY, JSON.stringify(demoUser));
+    setUser(demoUser);
+    return { success: true };
+  }
+
   function logout() {
     localStorage.removeItem(SESSION_KEY);
     setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signup, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, signup, login, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   );
