@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { Search } from "lucide-react";
 import TripCard from "@/components/TripCard";
 import Footer from "@/components/Footer";
 import { TRIPS } from "@/lib/data";
@@ -15,9 +17,14 @@ export default function TripsPage() {
             connect vibe
           </span>
         </a>
-        <button className="text-[13px] font-medium bg-white text-black px-4 py-2 rounded-full">
-          Sign up
-        </button>
+        <div className="flex items-center gap-3">
+          <Link href="/search" aria-label="Search" className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
+            <Search className="w-4 h-4 text-white/70" />
+          </Link>
+          <button className="text-[13px] font-medium bg-white text-black px-4 py-2 rounded-full">
+            Sign up
+          </button>
+        </div>
       </nav>
 
       <section className="max-w-6xl mx-auto px-6 pt-10 pb-10">
