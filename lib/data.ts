@@ -1,4 +1,4 @@
-import type { EventListing } from "@/lib/types";
+import type { EventListing, TripListing } from "@/lib/types";
 
 export const EVENTS: EventListing[] = [
   { id: "01", title: "Rooftop Sessions: Sunset Sounds", category: "Music", date: "Sat, Aug 8", time: "7:00 PM", location: "Shoreditch, London", spots: 12, price: "£15", accent: "magenta" },
@@ -12,5 +12,51 @@ export const EVENTS: EventListing[] = [
 ];
 
 export const CATEGORIES = ["All", "Music", "Trip", "Social", "Wellness"] as const;
-	
 
+export const TRIPS: TripListing[] = [
+  {
+    id: "t01",
+    title: "Peak District Weekend Hike",
+    location: "Peak District, England",
+    dates: "Aug 14 to Aug 16",
+    duration: "2 days",
+    price: "£85",
+    spots: 4,
+    highlights: [
+      "Guided ridge walk with a certified hiking leader",
+      "Two nights in a shared bunkhouse",
+      "All meals and transport from London included",
+    ],
+    accent: "teal",
+  },
+  {
+    id: "t02",
+    title: "Coastal Cycling Day Trip",
+    location: "Brighton, England",
+    dates: "Aug 22",
+    duration: "1 day",
+    price: "£45",
+    spots: 7,
+    highlights: [
+      "Bike hire and helmet included",
+      "Coastal route with a lunch stop in Brighton",
+      "Return coach from central London",
+    ],
+    accent: "magenta",
+  },
+  {
+    id: "t03",
+    title: "Lake District Wild Camp",
+    location: "Lake District, England",
+    dates: "Sep 5 to Sep 7",
+    duration: "3 days",
+    price: "£120",
+    spots: 5,
+    highlights: [
+      "Wild camping with tents and kit provided",
+      "Evening around the fire with the group",
+      "Small group, capped at 12 people",
+    ],
+    accent: "violet",
+  },
+];
