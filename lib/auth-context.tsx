@@ -9,6 +9,7 @@ export interface User {
   avatarPreset?: string;
   pronouns?: string;
   orientation?: string;
+  bio?: string;
 }
 
 interface StoredUser extends User {
@@ -21,6 +22,7 @@ interface ProfileUpdates {
   avatarPreset?: string;
   pronouns?: string;
   orientation?: string;
+  bio?: string;
 }
 
 interface AuthContextValue {
@@ -94,6 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       avatarPreset: match.avatarPreset,
       pronouns: match.pronouns,
       orientation: match.orientation,
+      bio: match.bio,
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
     setUser(publicUser);
@@ -111,6 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatarPreset: existing.avatarPreset,
         pronouns: existing.pronouns,
         orientation: existing.orientation,
+        bio: existing.bio,
       };
       localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
       setUser(publicUser);
@@ -138,6 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         avatarPreset: updates.avatarPreset,
         pronouns: updates.pronouns,
         orientation: updates.orientation,
+        bio: updates.bio,
       };
       localStorage.setItem(SESSION_KEY, JSON.stringify(updated));
 
@@ -150,6 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               avatarPreset: updates.avatarPreset,
               pronouns: updates.pronouns,
               orientation: updates.orientation,
+              bio: updates.bio,
             }
           : u
       );

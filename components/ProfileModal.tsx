@@ -16,6 +16,7 @@ const ORIENTATION_OPTIONS = [
   "Queer",
   "Prefer not to say",
 ];
+const BIO_MAX_LENGTH = 160;
 
 export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const { user, updateProfile } = useAuth();
@@ -30,6 +31,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
     user?.pronouns && !PRONOUN_OPTIONS.includes(user.pronouns) ? user.pronouns : ""
   );
   const [orientation, setOrientation] = useState(user?.orientation ?? "");
+  const [bio, setBio] = useState(user?.bio ?? "");
 
   if (!user) return null;
 
@@ -57,6 +59,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
       avatarPreset: avatarUrl ? undefined : avatarPreset,
       pronouns: finalPronouns || undefined,
       orientation: orientation || undefined,
+      bio: bio.trim() || undefined,
     });
     onClose();
   }
@@ -112,6 +115,22 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[13px] text-white/50">Bio</p>
+            <span className="text-[11px] font-mono text-white/30">
+              {bio.length}/{BIO_MAX_LENGTH}
+            </span>
+          </div>
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value.slice(0, BIO_MAX_LENGTH))}
+            placeholder="Tell people a bit about yourself"
+            rows={3}
+            className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50 resize-none"
+          />
         </div>
 
         <div className="mb-8">
