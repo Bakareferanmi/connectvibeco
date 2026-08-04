@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Calendar, MapPin, Users, ArrowUpRight, Heart } from "lucide-react";
 import type { EventListing, Accent } from "@/lib/types";
 import { useSaved } from "@/lib/useSaved";
+import { useToast } from "@/lib/toast-context";
 import AttendeeStack from "@/components/AttendeeStack";
 
 const ACCENTS: Record<Accent, { text: string; hoverText: string }> = {
@@ -15,6 +16,13 @@ const ACCENTS: Record<Accent, { text: string; hoverText: string }> = {
 export default function TicketCard({ event }: { event: EventListing }) {
   const a = ACCENTS[event.accent];
   const { saved, toggle } = useSaved(event.id);
+  const { showToast } = useToast();
+
+  function handleToggle(e: React.MouseEvent) {
+    const willBeSaved = !saved;
+    toggle(e);
+    showToast(willBeSaved ? "Saved to your list" : "Removed from saved");
+  }
 
   return (
     <Link
@@ -22,7 +30,7 @@ export default function TicketCard({ event }: { event: EventListing }) {
       className="relative w-full rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors group block"
     >
       <button
-        onClick={toggle}
+        onClick={handleToggle}
         aria-label={saved ? "Remove from saved" : "Save event"}
         className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors"
       >

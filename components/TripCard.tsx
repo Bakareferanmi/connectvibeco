@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Calendar, MapPin, Users, Heart } from "lucide-react";
 import type { TripListing, Accent } from "@/lib/types";
 import { useSaved } from "@/lib/useSaved";
+import { useToast } from "@/lib/toast-context";
 
 const ACCENTS: Record<Accent, { text: string; bg: string }> = {
   magenta: { text: "text-fuchsia-400", bg: "bg-fuchsia-500" },
@@ -14,6 +15,13 @@ const ACCENTS: Record<Accent, { text: string; bg: string }> = {
 export default function TripCard({ trip }: { trip: TripListing }) {
   const a = ACCENTS[trip.accent];
   const { saved, toggle } = useSaved(trip.id);
+  const { showToast } = useToast();
+
+  function handleToggle(e: React.MouseEvent) {
+    const willBeSaved = !saved;
+    toggle(e);
+    showToast(willBeSaved ? "Saved to your list" : "Removed from saved");
+  }
 
   return (
     <Link
@@ -21,7 +29,7 @@ export default function TripCard({ trip }: { trip: TripListing }) {
       className="relative block rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors"
     >
       <button
-        onClick={toggle}
+        onClick={handleToggle}
         aria-label={saved ? "Remove from saved" : "Save trip"}
         className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors"
       >
