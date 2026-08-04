@@ -11,3 +11,15 @@ export interface EventListing {
   price: string;
   accent: Accent;
 }
+
+export interface TripListing {
+  id: string;
+  title: string;
+  location: string;
+  dates: string;
+  duration: string;
+  price: string;
+  spots: number;
+  highlights: string[];
+  accent: Accent;
+}
