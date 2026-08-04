@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Calendar, MapPin, Users, Heart } from "lucide-react";
 import type { TripListing, Accent } from "@/lib/types";
