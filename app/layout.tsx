@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Connect Vibe Co — Find your people",
+  title: "Connect Vibe Co, Find your people",
   description:
-    "Local meetups, weekend trips, and nights out — vetted, bookable, and full of strangers worth meeting.",
+    "Local meetups, weekend trips, and nights out. Vetted, bookable, and full of strangers worth meeting.",
 };
 
 export default function RootLayout({

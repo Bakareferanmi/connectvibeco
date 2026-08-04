@@ -6,8 +6,8 @@ const config: Config = {
     extend: {
       colors: { ink: "#0B0B0F", panel: "#111116" },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        display: ["Space Grotesk", "system-ui", "sans-serif"],
+        sans: ["Poppins", "system-ui", "sans-serif"],
+        display: ["Poppins", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
     },

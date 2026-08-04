@@ -10,6 +10,7 @@ const EVENTS: EventListing[] = [
   { id: "03", title: "Supper Club: Strangers & Stories", category: "Social", date: "Thu, Aug 6", time: "8:00 PM", location: "Hackney, London", spots: 3, price: "£28", accent: "violet" },
 ];
 
+const NAV_LINKS = ["Events", "Trips", "Membership"] as const;
 const TABS = ["nearby", "this week", "trips"] as const;
 
 export default function HomePage() {
@@ -23,9 +24,11 @@ export default function HomePage() {
           <span className="font-display font-semibold tracking-tight">connect vibe</span>
         </div>
         <div className="hidden sm:flex items-center gap-6 text-[14px] text-white/60">
-          <span>Events</span>
-          <span>Trips</span>
-          <span>Membership</span>
+          {NAV_LINKS.map((link) => (
+            <button key={link} className="hover:text-white transition-colors">
+              {link}
+            </button>
+          ))}
         </div>
         <button className="text-[13px] font-medium bg-white text-black px-4 py-2 rounded-full">Sign up</button>
       </nav>
@@ -39,7 +42,7 @@ export default function HomePage() {
             <span className="bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">Show up.</span>
           </h1>
           <p className="text-white/50 text-[16px] max-w-md mt-5 leading-relaxed">
-            Local meetups, weekend trips, and nights out — vetted, bookable, and full of strangers worth meeting.
+            Local meetups, weekend trips, and nights out. Vetted, bookable, and full of strangers worth meeting.
           </p>
           <div className="flex items-center gap-3 mt-8">
             <button className="bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full">Browse events</button>
@@ -57,7 +60,7 @@ export default function HomePage() {
               </button>
             ))}
           </div>
-          <span className="text-[13px] text-white/30 font-mono hidden sm:block">scroll →</span>
+          <button className="text-[13px] text-white/30 font-mono hidden sm:block">scroll to see more</button>
         </div>
 
         <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 sm:mx-0 sm:px-0">
