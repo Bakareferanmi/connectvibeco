@@ -1,15 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Search } from "lucide-react";
 import TicketCard from "@/components/TicketCard";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
+import Nav from "@/components/Nav";
 import { EVENTS } from "@/lib/data";
 
-const NAV_LINKS = ["Events", "Trips", "Membership"] as const;
 const TABS = ["nearby", "this week", "trips"] as const;
 
 export default function HomePage() {
@@ -17,25 +15,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-ink overflow-hidden">
-      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full border-2 border-fuchsia-500" style={{ boxShadow: "0 0 12px rgba(217,70,239,0.6)" }} />
-          <span className="font-display font-semibold tracking-tight">connect vibe</span>
-        </div>
-        <div className="hidden sm:flex items-center gap-6 text-[14px] text-white/60">
-          {NAV_LINKS.map((link) => (
-            <button key={link} className="hover:text-white transition-colors">
-              {link}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href="/search" aria-label="Search" className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
-            <Search className="w-4 h-4 text-white/70" />
-          </Link>
-          <button className="text-[13px] font-medium bg-white text-black px-4 py-2 rounded-full">Sign up</button>
-        </div>
-      </nav>
+      <Nav />
 
       <section className="relative max-w-6xl mx-auto px-6 pt-16 pb-20">
         <div className="absolute -top-10 right-0 w-[420px] h-[420px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(217,70,239,0.15) 0%, rgba(139,92,246,0.08) 40%, transparent 70%)" }} />

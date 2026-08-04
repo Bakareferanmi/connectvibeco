@@ -5,6 +5,7 @@ import { Search as SearchIcon } from "lucide-react";
 import TicketCard from "@/components/TicketCard";
 import TripCard from "@/components/TripCard";
 import Footer from "@/components/Footer";
+import Nav from "@/components/Nav";
 import { EVENTS, TRIPS } from "@/lib/data";
 
 export default function SearchPage() {
@@ -36,13 +37,7 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen bg-ink">
-      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
-        <a href="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full border-2 border-fuchsia-500" style={{ boxShadow: "0 0 12px rgba(217,70,239,0.6)" }} />
-          <span className="font-display font-semibold tracking-tight">connect vibe</span>
-        </a>
-        <button className="text-[13px] font-medium bg-white text-black px-4 py-2 rounded-full">Sign up</button>
-      </nav>
+      <Nav />
 
       <section className="max-w-3xl mx-auto px-6 pt-10 pb-8">
         <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">

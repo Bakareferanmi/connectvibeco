@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Calendar, MapPin, Users, ArrowLeft } from "lucide-react";
 import Footer from "@/components/Footer";
+import Nav from "@/components/Nav";
 import TicketCard from "@/components/TicketCard";
 import { EVENTS } from "@/lib/data";
 import type { Accent } from "@/lib/types";
@@ -31,13 +32,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
 
   return (
     <div className="min-h-screen bg-ink">
-      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
-        <a href="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full border-2 border-fuchsia-500" style={{ boxShadow: "0 0 12px rgba(217,70,239,0.6)" }} />
-          <span className="font-display font-semibold tracking-tight">connect vibe</span>
-        </a>
-        <button className="text-[13px] font-medium bg-white text-black px-4 py-2 rounded-full">Sign up</button>
-      </nav>
+      <Nav />
 
       <section className="max-w-3xl mx-auto px-6 pt-8 pb-16">
         <Link href="/events" className="inline-flex items-center gap-1.5 text-[13px] text-white/40 hover:text-white/70 transition-colors mb-8">
