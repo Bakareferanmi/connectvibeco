@@ -10,7 +10,6 @@ import ProfileModal from "@/components/ProfileModal";
 const NAV_LINKS = [
   { label: "Events", href: "/events" },
   { label: "Trips", href: "/trips" },
-  { label: "Saved", href: "/saved" },
 ] as const;
 
 export default function Nav() {
@@ -61,12 +60,19 @@ export default function Nav() {
               </button>
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-44 rounded-xl bg-panel border border-white/10 overflow-hidden shadow-lg z-10">
+                  <Link
+                    href="/saved"
+                    onClick={() => setMenuOpen(false)}
+                    className="block w-full text-left px-4 py-3 text-[13px] text-white/70 hover:bg-white/5 transition-colors"
+                  >
+                    Saved
+                  </Link>
                   <button
                     onClick={() => {
                       setMenuOpen(false);
                       setProfileOpen(true);
                     }}
-                    className="w-full text-left px-4 py-3 text-[13px] text-white/70 hover:bg-white/5 transition-colors"
+                    className="w-full text-left px-4 py-3 text-[13px] text-white/70 hover:bg-white/5 transition-colors border-t border-white/5"
                   >
                     Edit profile
                   </button>
