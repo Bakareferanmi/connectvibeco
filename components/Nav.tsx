@@ -10,6 +10,7 @@ import ProfileModal from "@/components/ProfileModal";
 const NAV_LINKS = [
   { label: "Events", href: "/events" },
   { label: "Trips", href: "/trips" },
+  { label: "Saved", href: "/saved" },
 ] as const;
 
 export default function Nav() {
