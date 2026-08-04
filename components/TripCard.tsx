@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Calendar, MapPin, Users, Heart } from "lucide-react";
 import type { TripListing, Accent } from "@/lib/types";
+import { useSaved } from "@/lib/useSaved";
 
 const ACCENTS: Record<Accent, { text: string; bg: string }> = {
   magenta: { text: "text-fuchsia-400", bg: "bg-fuchsia-500" },
@@ -10,16 +11,28 @@ const ACCENTS: Record<Accent, { text: string; bg: string }> = {
 
 export default function TripCard({ trip }: { trip: TripListing }) {
   const a = ACCENTS[trip.accent];
+  const { saved, toggle } = useSaved(trip.id);
+
   return (
     <Link
       href={`/trips/${trip.id}`}
-      className="block rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors"
+      className="relative block rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors"
     >
+      <button
+        onClick={toggle}
+        aria-label={saved ? "Remove from saved" : "Save trip"}
+        className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors"
+      >
+        <Heart
+          className={`w-4 h-4 transition-colors ${saved ? "fill-fuchsia-500 text-fuchsia-500" : "text-white/70"}`}
+        />
+      </button>
+
       <div className={`h-1.5 ${a.bg}`} />
       <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h3 className="font-display font-semibold text-white text-[20px] leading-snug mb-2">
+            <h3 className="font-display font-semibold text-white text-[20px] leading-snug mb-2 pr-8">
               {trip.title}
             </h3>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-white/50">

@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Calendar, MapPin, Users, ArrowUpRight } from "lucide-react";
+import { Calendar, MapPin, Users, ArrowUpRight, Heart } from "lucide-react";
 import type { EventListing, Accent } from "@/lib/types";
+import { useSaved } from "@/lib/useSaved";
 
 const ACCENTS: Record<Accent, { text: string; hoverText: string }> = {
   magenta: { text: "text-fuchsia-400", hoverText: "group-hover:text-fuchsia-400" },
@@ -10,11 +11,23 @@ const ACCENTS: Record<Accent, { text: string; hoverText: string }> = {
 
 export default function TicketCard({ event }: { event: EventListing }) {
   const a = ACCENTS[event.accent];
+  const { saved, toggle } = useSaved(event.id);
+
   return (
     <Link
       href={`/events/${event.id}`}
       className="relative w-full rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors group block"
     >
+      <button
+        onClick={toggle}
+        aria-label={saved ? "Remove from saved" : "Save event"}
+        className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors"
+      >
+        <Heart
+          className={`w-4 h-4 transition-colors ${saved ? "fill-fuchsia-500 text-fuchsia-500" : "text-white/70"}`}
+        />
+      </button>
+
       <div className="p-5 pb-4">
         <div className="flex items-center justify-between mb-4">
           <span className={`text-[11px] tracking-[0.15em] uppercase font-mono ${a.text}`}>
@@ -22,7 +35,7 @@ export default function TicketCard({ event }: { event: EventListing }) {
           </span>
           <span className="text-[11px] font-mono text-white/30">#{event.id}</span>
         </div>
-        <h3 className="font-display font-semibold text-white text-[17px] leading-snug mb-4">
+        <h3 className="font-display font-semibold text-white text-[17px] leading-snug mb-4 pr-8">
           {event.title}
         </h3>
         <div className="space-y-2 text-[13px] text-white/50">
