@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import TicketCard from "@/components/TicketCard";
+import HowItWorks from "@/components/HowItWorks";
+import Testimonials from "@/components/Testimonials";
+import Footer from "@/components/Footer";
 import type { EventListing } from "@/lib/types";
 
 const EVENTS: EventListing[] = [
@@ -69,6 +72,10 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      <HowItWorks />
+      <Testimonials />
+      <Footer />
     </div>
   );
 }
