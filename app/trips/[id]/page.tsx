@@ -100,7 +100,14 @@ export default function TripDetailPage({ params }: { params: { id: string } }) {
               <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-1">Price per person</p>
               <span className="font-mono text-white text-2xl">{trip.price}</span>
             </div>
-            <BookButton id={trip.id} label="Reserve your spot" />
+            <BookButton
+              id={trip.id}
+              title={trip.title}
+              meta={trip.dates}
+              price={trip.price}
+              maxQty={trip.spots}
+              label="Reserve your spot"
+            />
           </div>
           <SaveButton id={trip.id} label="Save for later" />
         </div>

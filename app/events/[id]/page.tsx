@@ -88,7 +88,14 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
               <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-1">Price</p>
               <span className="font-mono text-white text-2xl">{event.price}</span>
             </div>
-            <BookButton id={event.id} label="Book spot" />
+            <BookButton
+              id={event.id}
+              title={event.title}
+              meta={`${event.date} · ${event.time}`}
+              price={event.price}
+              maxQty={event.spots}
+              label="Book spot"
+            />
           </div>
           <SaveButton id={event.id} label="Save for later" />
         </div>
