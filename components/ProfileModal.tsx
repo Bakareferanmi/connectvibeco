@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { X as CloseIcon, Upload, Check, Instagram } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useToast } from "@/lib/toast-context";
 import Avatar, { AVATAR_PRESETS } from "@/components/Avatar";
 
 function XIcon({ className }: { className?: string }) {
@@ -54,6 +55,7 @@ function cleanHandle(value: string) {
 
 export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const { user, updateProfile } = useAuth();
+  const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? "");
@@ -114,6 +116,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
       twitter: cleanHandle(twitter) || undefined,
       tiktok: cleanHandle(tiktok) || undefined,
     });
+    showToast("Profile updated");
     onClose();
   }
 
