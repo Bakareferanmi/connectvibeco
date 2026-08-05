@@ -11,6 +11,7 @@ export interface EventListing {
   price: string;
   accent: Accent;
   description: string;
+  images?: string[];
 }
 
 export interface TripListing {
@@ -24,4 +25,6 @@ export interface TripListing {
   highlights: string[];
   accent: Accent;
   description: string;
+  images?: string[];
 }
+

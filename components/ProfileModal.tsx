@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { X, Upload, Check } from "lucide-react";
+import { X, Upload, Check, Instagram, Twitter, Music2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import Avatar, { AVATAR_PRESETS } from "@/components/Avatar";
 
@@ -32,6 +32,10 @@ const ORIENTATION_OPTIONS = [
 ];
 const BIO_MAX_LENGTH = 160;
 
+function cleanHandle(value: string) {
+  return value.trim().replace(/^@/, "");
+}
+
 export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const { user, updateProfile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -49,6 +53,9 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const [age, setAge] = useState(user?.age ? String(user.age) : "");
   const [city, setCity] = useState(user?.city ?? "");
   const [interests, setInterests] = useState<string[]>(user?.interests ?? []);
+  const [instagram, setInstagram] = useState(user?.instagram ?? "");
+  const [twitter, setTwitter] = useState(user?.twitter ?? "");
+  const [tiktok, setTiktok] = useState(user?.tiktok ?? "");
 
   function toggleInterest(interest: string) {
     setInterests((current) =>
@@ -87,6 +94,9 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
       age: Number.isFinite(parsedAge) && parsedAge > 0 ? parsedAge : undefined,
       city: city.trim() || undefined,
       interests: interests.length > 0 ? interests : undefined,
+      instagram: cleanHandle(instagram) || undefined,
+      twitter: cleanHandle(twitter) || undefined,
+      tiktok: cleanHandle(tiktok) || undefined,
     });
     onClose();
   }
@@ -182,6 +192,42 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
               placeholder="Lagos"
               className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
             />
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <p className="text-[13px] text-white/50 mb-3">Socials</p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 bg-ink border border-white/10 rounded-xl px-4 py-2.5 focus-within:border-fuchsia-500/50">
+              <Instagram className="w-4 h-4 text-white/30 flex-shrink-0" />
+              <input
+                type="text"
+                value={instagram}
+                onChange={(e) => setInstagram(e.target.value)}
+                placeholder="Instagram handle"
+                className="w-full bg-transparent text-[14px] text-white placeholder-white/30 focus:outline-none"
+              />
+            </div>
+            <div className="flex items-center gap-2 bg-ink border border-white/10 rounded-xl px-4 py-2.5 focus-within:border-fuchsia-500/50">
+              <Twitter className="w-4 h-4 text-white/30 flex-shrink-0" />
+              <input
+                type="text"
+                value={twitter}
+                onChange={(e) => setTwitter(e.target.value)}
+                placeholder="X / Twitter handle"
+                className="w-full bg-transparent text-[14px] text-white placeholder-white/30 focus:outline-none"
+              />
+            </div>
+            <div className="flex items-center gap-2 bg-ink border border-white/10 rounded-xl px-4 py-2.5 focus-within:border-fuchsia-500/50">
+              <Music2 className="w-4 h-4 text-white/30 flex-shrink-0" />
+              <input
+                type="text"
+                value={tiktok}
+                onChange={(e) => setTiktok(e.target.value)}
+                placeholder="TikTok handle"
+                className="w-full bg-transparent text-[14px] text-white placeholder-white/30 focus:outline-none"
+              />
+            </div>
           </div>
         </div>
 

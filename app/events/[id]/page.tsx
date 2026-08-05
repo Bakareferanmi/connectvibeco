@@ -7,6 +7,7 @@ import TicketCard from "@/components/TicketCard";
 import AttendeeStack from "@/components/AttendeeStack";
 import SaveButton from "@/components/SaveButton";
 import BookButton from "@/components/BookButton";
+import EventGallery from "@/components/EventGallery";
 import { EVENTS } from "@/lib/data";
 import type { Accent } from "@/lib/types";
 
@@ -45,6 +46,8 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to events
         </Link>
+
+        {event.images && <EventGallery images={event.images} alt={event.title} />}
 
         <span className={`text-[11px] tracking-[0.15em] uppercase font-mono ${a.text}`}>
           {event.category}

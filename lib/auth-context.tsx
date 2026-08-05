@@ -13,6 +13,9 @@ export interface User {
   age?: number;
   city?: string;
   interests?: string[];
+  instagram?: string;
+  twitter?: string;
+  tiktok?: string;
 }
 
 interface StoredUser extends User {
@@ -29,6 +32,9 @@ interface ProfileUpdates {
   age?: number;
   city?: string;
   interests?: string[];
+  instagram?: string;
+  twitter?: string;
+  tiktok?: string;
 }
 
 interface AuthContextValue {
@@ -57,6 +63,24 @@ function getUsers(): StoredUser[] {
 
 function saveUsers(users: StoredUser[]) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+function toPublicUser(u: StoredUser): User {
+  return {
+    name: u.name,
+    email: u.email,
+    avatarUrl: u.avatarUrl,
+    avatarPreset: u.avatarPreset,
+    pronouns: u.pronouns,
+    orientation: u.orientation,
+    bio: u.bio,
+    age: u.age,
+    city: u.city,
+    interests: u.interests,
+    instagram: u.instagram,
+    twitter: u.twitter,
+    tiktok: u.tiktok,
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -95,18 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!match) {
       return { success: false, error: "Incorrect email or password." };
     }
-    const publicUser: User = {
-      name: match.name,
-      email: match.email,
-      avatarUrl: match.avatarUrl,
-      avatarPreset: match.avatarPreset,
-      pronouns: match.pronouns,
-      orientation: match.orientation,
-      bio: match.bio,
-      age: match.age,
-      city: match.city,
-      interests: match.interests,
-    };
+    const publicUser = toPublicUser(match);
     localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
     setUser(publicUser);
     return { success: true };
@@ -116,18 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const users = getUsers();
     const existing = users.find((u) => u.email.toLowerCase() === "alex.rivera@gmail.com");
     if (existing) {
-      const publicUser: User = {
-        name: existing.name,
-        email: existing.email,
-        avatarUrl: existing.avatarUrl,
-        avatarPreset: existing.avatarPreset,
-        pronouns: existing.pronouns,
-        orientation: existing.orientation,
-        bio: existing.bio,
-        age: existing.age,
-        city: existing.city,
-        interests: existing.interests,
-      };
+      const publicUser = toPublicUser(existing);
       localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
       setUser(publicUser);
       return { success: true };
@@ -158,6 +160,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         age: updates.age,
         city: updates.city,
         interests: updates.interests,
+        instagram: updates.instagram,
+        twitter: updates.twitter,
+        tiktok: updates.tiktok,
       };
       localStorage.setItem(SESSION_KEY, JSON.stringify(updated));
 
@@ -174,6 +179,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               age: updates.age,
               city: updates.city,
               interests: updates.interests,
+              instagram: updates.instagram,
+              twitter: updates.twitter,
+              tiktok: updates.tiktok,
             }
           : u
       );
