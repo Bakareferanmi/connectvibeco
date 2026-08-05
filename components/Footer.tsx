@@ -78,9 +78,22 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/10">
-          <p className="text-white/30 text-[13px]">
-            Connect Vibe Co, all rights reserved.
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
+            <p className="text-white/30 text-[13px]">
+              Connect Vibe Co, all rights reserved.
+            </p>
+            <p className="text-white/30 text-[13px]">
+              Built with ♥️ by{" "}
+              <a
+                href="https://beepeethebrand.netlify.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/50 hover:text-white transition-colors"
+              >
+                BeepeeLabs
+              </a>
+            </p>
+          </div>
           <div className="flex items-center gap-3">
             {SOCIALS.map(({ label, href, Icon }) => (
               <a
