@@ -64,6 +64,13 @@ export default function Nav() {
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-44 rounded-xl bg-panel border border-white/10 overflow-hidden shadow-lg z-10">
                   <Link
+                    href="/bookings"
+                    onClick={() => setMenuOpen(false)}
+                    className="block w-full text-left px-4 py-3 text-[13px] text-white/70 hover:bg-white/5 transition-colors"
+                  >
+                    Bookings
+                  </Link>
+                  <Link
                     href="/saved"
                     onClick={() => setMenuOpen(false)}
                     className="block w-full text-left px-4 py-3 text-[13px] text-white/70 hover:bg-white/5 transition-colors"

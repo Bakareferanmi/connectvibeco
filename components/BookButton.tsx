@@ -27,7 +27,7 @@ export default function BookButton({ id, title, meta, price, maxQty, label = "Bo
   function handleClick() {
     if (!user) {
       showToast("Sign in to book your spot");
-      router.push("/login");
+      router.push("/login?reason=booking");
       return;
     }
     if (booked) return;
@@ -36,7 +36,6 @@ export default function BookButton({ id, title, meta, price, maxQty, label = "Bo
 
   function handleConfirmed() {
     book();
-    showToast("You're booked! Check your email for details.");
   }
 
   return (

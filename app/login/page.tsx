@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import Nav from "@/components/Nav";
 import { useAuth } from "@/lib/auth-context";
@@ -19,9 +19,11 @@ function GoogleIcon() {
   );
 }
 
-export default function AuthPage() {
+function AuthForm() {
   const { login, signup, loginWithGoogle } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const reason = searchParams.get("reason");
   const [mode, setMode] = useState<Mode>("login");
 
   const [name, setName] = useState("");
@@ -81,6 +83,12 @@ export default function AuthPage() {
         <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
           {mode === "login" ? "Welcome back" : "Join connect vibe"}
         </p>
+
+        {reason === "booking" && (
+          <p className="text-[13px] text-white/60 bg-white/5 border border-white/10 rounded-xl px-4 py-3 mb-6">
+            Sign in to complete your booking.
+          </p>
+        )}
 
         <div className="flex items-center gap-1 bg-white/5 rounded-full p-1 w-fit mb-8">
           <button
@@ -199,5 +207,13 @@ export default function AuthPage() {
         </p>
       )}
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <AuthForm />
+    </Suspense>
   );
 }
