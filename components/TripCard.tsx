@@ -5,6 +5,7 @@ import { Calendar, MapPin, Users, Heart } from "lucide-react";
 import type { TripListing, Accent } from "@/lib/types";
 import { useSaved } from "@/lib/useSaved";
 import { useToast } from "@/lib/toast-context";
+import AttendeeStack from "@/components/AttendeeStack";
 
 const ACCENTS: Record<Accent, { text: string; bg: string }> = {
   magenta: { text: "text-fuchsia-400", bg: "bg-fuchsia-500" },
@@ -73,6 +74,10 @@ export default function TripCard({ trip }: { trip: TripListing }) {
             </li>
           ))}
         </ul>
+
+        <div className="mb-6">
+          <AttendeeStack seed={trip.id} />
+        </div>
 
         <div className="flex items-center justify-between pt-4 border-t border-white/10">
           <span className="font-mono text-white text-xl">{trip.price}</span>
