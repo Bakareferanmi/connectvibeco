@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, MapPin, Users, Heart } from "lucide-react";
+import { Calendar, MapPin, Users, Heart, Flame } from "lucide-react";
 import type { TripListing, Accent } from "@/lib/types";
 import { useSaved } from "@/lib/useSaved";
 import { useToast } from "@/lib/toast-context";
@@ -13,10 +13,13 @@ const ACCENTS: Record<Accent, { text: string; bg: string }> = {
   violet: { text: "text-violet-400", bg: "bg-violet-500" },
 };
 
+const LOW_SPOTS_THRESHOLD = 3;
+
 export default function TripCard({ trip }: { trip: TripListing }) {
   const a = ACCENTS[trip.accent];
   const { saved, toggle } = useSaved(trip.id);
   const { showToast } = useToast();
+  const isFillingFast = trip.spots <= LOW_SPOTS_THRESHOLD;
 
   function handleToggle(e: React.MouseEvent) {
     const willBeSaved = !saved;
@@ -59,6 +62,12 @@ export default function TripCard({ trip }: { trip: TripListing }) {
                 <Users className="w-3.5 h-3.5" />
                 {trip.spots} spots left
               </span>
+              {isFillingFast && (
+                <span className="flex items-center gap-1 text-[11px] font-medium text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-full">
+                  <Flame className="w-3 h-3" />
+                  Filling fast
+                </span>
+              )}
             </div>
           </div>
           <span className={`text-[11px] font-mono uppercase tracking-[0.1em] ${a.text}`}>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, MapPin, Users, ArrowUpRight, Heart } from "lucide-react";
+import { Calendar, MapPin, Users, ArrowUpRight, Heart, Flame } from "lucide-react";
 import type { EventListing, Accent } from "@/lib/types";
 import { useSaved } from "@/lib/useSaved";
 import { useToast } from "@/lib/toast-context";
@@ -13,10 +13,13 @@ const ACCENTS: Record<Accent, { text: string; hoverText: string }> = {
   violet: { text: "text-violet-400", hoverText: "group-hover:text-violet-400" },
 };
 
+const LOW_SPOTS_THRESHOLD = 3;
+
 export default function TicketCard({ event }: { event: EventListing }) {
   const a = ACCENTS[event.accent];
   const { saved, toggle } = useSaved(event.id);
   const { showToast } = useToast();
+  const isFillingFast = event.spots <= LOW_SPOTS_THRESHOLD;
 
   function handleToggle(e: React.MouseEvent) {
     const willBeSaved = !saved;
@@ -61,6 +64,12 @@ export default function TicketCard({ event }: { event: EventListing }) {
           <div className="flex items-center gap-2">
             <Users className="w-3.5 h-3.5" />
             <span>{event.spots} spots left</span>
+            {isFillingFast && (
+              <span className="flex items-center gap-1 text-[11px] font-medium text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-full ml-1">
+                <Flame className="w-3 h-3" />
+                Filling fast
+              </span>
+            )}
           </div>
         </div>
         <AttendeeStack seed={event.id} />
