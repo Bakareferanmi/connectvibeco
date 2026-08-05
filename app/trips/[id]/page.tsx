@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import AttendeeStack from "@/components/AttendeeStack";
 import SaveButton from "@/components/SaveButton";
+import BookButton from "@/components/BookButton";
 import { TRIPS } from "@/lib/data";
 import type { Accent } from "@/lib/types";
 
@@ -99,9 +100,7 @@ export default function TripDetailPage({ params }: { params: { id: string } }) {
               <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-1">Price per person</p>
               <span className="font-mono text-white text-2xl">{trip.price}</span>
             </div>
-            <button className="bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors">
-              Reserve your spot
-            </button>
+            <BookButton id={trip.id} label="Reserve your spot" />
           </div>
           <SaveButton id={trip.id} label="Save for later" />
         </div>

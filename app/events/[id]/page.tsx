@@ -6,6 +6,7 @@ import Nav from "@/components/Nav";
 import TicketCard from "@/components/TicketCard";
 import AttendeeStack from "@/components/AttendeeStack";
 import SaveButton from "@/components/SaveButton";
+import BookButton from "@/components/BookButton";
 import { EVENTS } from "@/lib/data";
 import type { Accent } from "@/lib/types";
 
@@ -87,9 +88,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
               <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-1">Price</p>
               <span className="font-mono text-white text-2xl">{event.price}</span>
             </div>
-            <button className="bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors">
-              Book spot
-            </button>
+            <BookButton id={event.id} label="Book spot" />
           </div>
           <SaveButton id={event.id} label="Save for later" />
         </div>
