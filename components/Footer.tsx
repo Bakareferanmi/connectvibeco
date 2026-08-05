@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FaInstagram, FaFacebookF, FaXTwitter, FaPinterestP, FaThreads } from "react-icons/fa6";
 
 const COLUMNS = [
   {
@@ -24,6 +25,14 @@ const COLUMNS = [
       { label: "Privacy policy", href: "/privacy" },
     ],
   },
+];
+
+const SOCIALS = [
+  { label: "Instagram", href: "https://instagram.com/connectvibeco", Icon: FaInstagram },
+  { label: "X", href: "https://x.com/connectvibeco", Icon: FaXTwitter },
+  { label: "Facebook", href: "https://facebook.com/connectvibeco", Icon: FaFacebookF },
+  { label: "Pinterest", href: "https://pinterest.com/connectvibeco", Icon: FaPinterestP },
+  { label: "Threads", href: "https://threads.net/@connectvibeco", Icon: FaThreads },
 ];
 
 export default function Footer() {
@@ -72,13 +81,19 @@ export default function Footer() {
           <p className="text-white/30 text-[13px]">
             Connect Vibe Co, all rights reserved.
           </p>
-          <div className="flex items-center gap-4">
-            <button className="text-white/40 hover:text-white text-[13px] transition-colors">
-              Instagram
-            </button>
-            <button className="text-white/40 hover:text-white text-[13px] transition-colors">
-              TikTok
-            </button>
+          <div className="flex items-center gap-3">
+            {SOCIALS.map(({ label, href, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+              >
+                <Icon className="w-3.5 h-3.5 text-white/60" />
+              </a>
+            ))}
           </div>
         </div>
       </div>
