@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Calendar, MapPin, Users, ArrowLeft, Check } from "lucide-react";
+import { Calendar, MapPin, Users, ArrowLeft, Check, Flame } from "lucide-react";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
+import AttendeeStack from "@/components/AttendeeStack";
+import SaveButton from "@/components/SaveButton";
 import { TRIPS } from "@/lib/data";
 import type { Accent } from "@/lib/types";
 
@@ -11,6 +13,8 @@ const ACCENTS: Record<Accent, { text: string; bg: string }> = {
   teal: { text: "text-cyan-400", bg: "bg-cyan-500" },
   violet: { text: "text-violet-400", bg: "bg-violet-500" },
 };
+
+const LOW_SPOTS_THRESHOLD = 3;
 
 export function generateStaticParams() {
   return TRIPS.map((t) => ({ id: t.id }));
@@ -27,6 +31,7 @@ export default function TripDetailPage({ params }: { params: { id: string } }) {
   if (!trip) notFound();
 
   const a = ACCENTS[trip.accent];
+  const isFillingFast = trip.spots <= LOW_SPOTS_THRESHOLD;
 
   return (
     <div className="min-h-screen bg-ink">
@@ -44,7 +49,7 @@ export default function TripDetailPage({ params }: { params: { id: string } }) {
           {trip.title}
         </h1>
 
-        <div className="flex flex-wrap gap-x-6 gap-y-3 text-[14px] text-white/60 mb-8">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[14px] text-white/60 mb-6">
           <span className="flex items-center gap-2">
             <MapPin className="w-4 h-4" />
             {trip.location}
@@ -57,9 +62,19 @@ export default function TripDetailPage({ params }: { params: { id: string } }) {
             <Users className="w-4 h-4" />
             {trip.spots} spots left
           </span>
+          {isFillingFast && (
+            <span className="flex items-center gap-1 text-[11px] font-medium text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-full">
+              <Flame className="w-3 h-3" />
+              Filling fast
+            </span>
+          )}
           <span className={`font-mono text-[11px] uppercase tracking-[0.15em] ${a.text}`}>
             {trip.duration}
           </span>
+        </div>
+
+        <div className="mb-8">
+          <AttendeeStack seed={trip.id} />
         </div>
 
         <p className="text-white/70 text-[15px] leading-relaxed max-w-xl mb-10">
@@ -78,14 +93,17 @@ export default function TripDetailPage({ params }: { params: { id: string } }) {
           ))}
         </ul>
 
-        <div className="flex items-center justify-between rounded-2xl bg-panel border border-white/10 p-6">
-          <div>
-            <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-1">Price per person</p>
-            <span className="font-mono text-white text-2xl">{trip.price}</span>
+        <div className="rounded-2xl bg-panel border border-white/10 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-1">Price per person</p>
+              <span className="font-mono text-white text-2xl">{trip.price}</span>
+            </div>
+            <button className="bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors">
+              Reserve your spot
+            </button>
           </div>
-          <button className="bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors">
-            Reserve your spot
-          </button>
+          <SaveButton id={trip.id} label="Save for later" />
         </div>
       </section>
 
