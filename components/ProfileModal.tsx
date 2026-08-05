@@ -1,9 +1,25 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { X, Upload, Check, Instagram, Twitter, Music2 } from "lucide-react";
+import { X as CloseIcon, Upload, Check, Instagram } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import Avatar, { AVATAR_PRESETS } from "@/components/Avatar";
+
+function XIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l12 15.644z" />
+    </svg>
+  );
+}
+
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M16.6 5.82c-.83-.9-1.29-2.07-1.29-3.32h-3.05v13.9c0 1.5-1.22 2.72-2.72 2.72a2.72 2.72 0 0 1-2.72-2.72 2.72 2.72 0 0 1 2.72-2.72c.28 0 .55.04.8.12V10.7a5.77 5.77 0 0 0-.8-.06 5.78 5.78 0 0 0-5.78 5.78A5.78 5.78 0 0 0 9.54 22.2a5.78 5.78 0 0 0 5.78-5.78V9.01a8.44 8.44 0 0 0 4.94 1.58V7.54c-1.34 0-2.58-.44-3.58-1.18a5.46 5.46 0 0 1-.08-.54z" />
+    </svg>
+  );
+}
 
 const PRONOUN_OPTIONS = ["She/her", "He/him", "They/them", "Ask me"];
 const INTEREST_OPTIONS = [
@@ -111,7 +127,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-display text-[20px] font-semibold tracking-tight">Edit profile</h2>
           <button onClick={onClose} aria-label="Close" className="text-white/40 hover:text-white/70 transition-colors">
-            <X className="w-5 h-5" />
+            <CloseIcon className="w-5 h-5" />
           </button>
         </div>
 
@@ -209,17 +225,17 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
               />
             </div>
             <div className="flex items-center gap-2 bg-ink border border-white/10 rounded-xl px-4 py-2.5 focus-within:border-fuchsia-500/50">
-              <Twitter className="w-4 h-4 text-white/30 flex-shrink-0" />
+              <XIcon className="w-3.5 h-3.5 text-white/30 flex-shrink-0" />
               <input
                 type="text"
                 value={twitter}
                 onChange={(e) => setTwitter(e.target.value)}
-                placeholder="X / Twitter handle"
+                placeholder="X handle"
                 className="w-full bg-transparent text-[14px] text-white placeholder-white/30 focus:outline-none"
               />
             </div>
             <div className="flex items-center gap-2 bg-ink border border-white/10 rounded-xl px-4 py-2.5 focus-within:border-fuchsia-500/50">
-              <Music2 className="w-4 h-4 text-white/30 flex-shrink-0" />
+              <TikTokIcon className="w-4 h-4 text-white/30 flex-shrink-0" />
               <input
                 type="text"
                 value={tiktok}
