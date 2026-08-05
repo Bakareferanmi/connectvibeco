@@ -1,15 +1,28 @@
+import Link from "next/link";
+
 const COLUMNS = [
   {
     heading: "Explore",
-    links: ["Events", "Trips", "Membership"],
+    links: [
+      { label: "Events", href: "/events" },
+      { label: "Trips", href: "/trips" },
+      { label: "Saved", href: "/saved" },
+    ],
   },
   {
     heading: "Company",
-    links: ["About us", "Blog", "Contact"],
+    links: [
+      { label: "About us", href: "/about" },
+      { label: "Blog", href: "/blog" },
+      { label: "Contact", href: "/contact" },
+    ],
   },
   {
     heading: "Legal",
-    links: ["Terms and conditions", "Privacy policy"],
+    links: [
+      { label: "Terms and conditions", href: "/terms" },
+      { label: "Privacy policy", href: "/privacy" },
+    ],
   },
 ];
 
@@ -41,10 +54,13 @@ export default function Footer() {
               </p>
               <ul className="space-y-3">
                 {col.links.map((link) => (
-                  <li key={link}>
-                    <button className="text-white/60 hover:text-white text-[14px] transition-colors text-left">
-                      {link}
-                    </button>
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-white/60 hover:text-white text-[14px] transition-colors"
+                    >
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
