@@ -10,6 +10,9 @@ export interface User {
   pronouns?: string;
   orientation?: string;
   bio?: string;
+  age?: number;
+  city?: string;
+  interests?: string[];
 }
 
 interface StoredUser extends User {
@@ -23,6 +26,9 @@ interface ProfileUpdates {
   pronouns?: string;
   orientation?: string;
   bio?: string;
+  age?: number;
+  city?: string;
+  interests?: string[];
 }
 
 interface AuthContextValue {
@@ -97,6 +103,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       pronouns: match.pronouns,
       orientation: match.orientation,
       bio: match.bio,
+      age: match.age,
+      city: match.city,
+      interests: match.interests,
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
     setUser(publicUser);
@@ -115,6 +124,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         pronouns: existing.pronouns,
         orientation: existing.orientation,
         bio: existing.bio,
+        age: existing.age,
+        city: existing.city,
+        interests: existing.interests,
       };
       localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
       setUser(publicUser);
@@ -143,6 +155,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         pronouns: updates.pronouns,
         orientation: updates.orientation,
         bio: updates.bio,
+        age: updates.age,
+        city: updates.city,
+        interests: updates.interests,
       };
       localStorage.setItem(SESSION_KEY, JSON.stringify(updated));
 
@@ -156,6 +171,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               pronouns: updates.pronouns,
               orientation: updates.orientation,
               bio: updates.bio,
+              age: updates.age,
+              city: updates.city,
+              interests: updates.interests,
             }
           : u
       );

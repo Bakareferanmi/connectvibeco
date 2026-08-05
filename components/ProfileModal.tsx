@@ -6,6 +6,20 @@ import { useAuth } from "@/lib/auth-context";
 import Avatar, { AVATAR_PRESETS } from "@/components/Avatar";
 
 const PRONOUN_OPTIONS = ["She/her", "He/him", "They/them", "Ask me"];
+const INTEREST_OPTIONS = [
+  "Live music",
+  "Foodie",
+  "Nightlife",
+  "Hiking",
+  "Travel",
+  "Fitness",
+  "Art",
+  "Gaming",
+  "Sports",
+  "Books",
+  "Fashion",
+  "Tech",
+];
 const ORIENTATION_OPTIONS = [
   "Straight",
   "Gay",
@@ -32,6 +46,15 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
   );
   const [orientation, setOrientation] = useState(user?.orientation ?? "");
   const [bio, setBio] = useState(user?.bio ?? "");
+  const [age, setAge] = useState(user?.age ? String(user.age) : "");
+  const [city, setCity] = useState(user?.city ?? "");
+  const [interests, setInterests] = useState<string[]>(user?.interests ?? []);
+
+  function toggleInterest(interest: string) {
+    setInterests((current) =>
+      current.includes(interest) ? current.filter((i) => i !== interest) : [...current, interest]
+    );
+  }
 
   if (!user) return null;
 
@@ -54,12 +77,16 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
 
   function handleSave() {
     const finalPronouns = pronouns === "custom" ? customPronouns.trim() : pronouns;
+    const parsedAge = parseInt(age, 10);
     updateProfile({
       avatarUrl: avatarUrl || undefined,
       avatarPreset: avatarUrl ? undefined : avatarPreset,
       pronouns: finalPronouns || undefined,
       orientation: orientation || undefined,
       bio: bio.trim() || undefined,
+      age: Number.isFinite(parsedAge) && parsedAge > 0 ? parsedAge : undefined,
+      city: city.trim() || undefined,
+      interests: interests.length > 0 ? interests : undefined,
     });
     onClose();
   }
@@ -131,6 +158,50 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
             rows={3}
             className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50 resize-none"
           />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div>
+            <p className="text-[13px] text-white/50 mb-3">Age</p>
+            <input
+              type="number"
+              min={1}
+              max={120}
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              placeholder="25"
+              className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
+            />
+          </div>
+          <div>
+            <p className="text-[13px] text-white/50 mb-3">City</p>
+            <input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="Lagos"
+              className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
+            />
+          </div>
+        </div>
+
+        <div className="mb-8">
+          <p className="text-[13px] text-white/50 mb-3">Interests</p>
+          <div className="flex flex-wrap gap-2">
+            {INTEREST_OPTIONS.map((interest) => (
+              <button
+                key={interest}
+                onClick={() => toggleInterest(interest)}
+                className={`text-[13px] px-4 py-1.5 rounded-full transition-colors ${
+                  interests.includes(interest)
+                    ? "bg-white text-black font-medium"
+                    : "bg-white/5 text-white/50 hover:text-white/80"
+                }`}
+              >
+                {interest}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="mb-8">
