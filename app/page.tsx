@@ -30,7 +30,6 @@ export default function HomePage() {
           </p>
           <div className="flex items-center gap-3 mt-8">
             <a href="/events" className="bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full">Browse events</a>
-            <button className="border border-white/20 hover:border-white/40 transition-colors text-white/80 text-[14px] font-medium px-6 py-3 rounded-full">How it works</button>
           </div>
         </div>
       </section>
