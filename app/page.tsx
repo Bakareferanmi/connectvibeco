@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import TicketCard from "@/components/TicketCard";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
@@ -10,8 +10,29 @@ import { EVENTS } from "@/lib/data";
 
 const TABS = ["nearby", "this week", "trips"] as const;
 
+function parseEventDate(dateStr: string): number {
+  const cleaned = dateStr.replace(/^[A-Za-z]+,\s*/, "");
+  const parsed = Date.parse(`${cleaned}, ${new Date().getFullYear()}`);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
 export default function HomePage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("nearby");
+
+  const filteredEvents = useMemo(() => {
+    if (tab === "trips") {
+      return EVENTS.filter((e) => e.category === "Trip");
+    }
+    if (tab === "this week") {
+      const now = Date.now();
+      const weekFromNow = now + 7 * 24 * 60 * 60 * 1000;
+      return EVENTS.filter((e) => {
+        const eventTime = parseEventDate(e.date);
+        return eventTime >= now && eventTime <= weekFromNow;
+      });
+    }
+    return EVENTS;
+  }, [tab]);
 
   return (
     <div className="min-h-screen bg-ink overflow-hidden">
@@ -46,13 +67,19 @@ export default function HomePage() {
           <button className="text-[13px] text-white/30 font-mono hidden sm:block">scroll to see more</button>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 sm:mx-0 sm:px-0">
-          {EVENTS.slice(0, 3).map((e) => (
-            <div key={e.id} className="w-[280px] flex-shrink-0">
-              <TicketCard event={e} />
-            </div>
-          ))}
-        </div>
+        {filteredEvents.length === 0 ? (
+          <p className="text-white/40 text-[14px] py-8">
+            Nothing in this category right now — check back soon.
+          </p>
+        ) : (
+          <div className="flex gap-4 overflow-x-auto pb-4 -mx-6 px-6 sm:mx-0 sm:px-0">
+            {filteredEvents.slice(0, 6).map((e) => (
+              <div key={e.id} className="w-[280px] flex-shrink-0">
+                <TicketCard event={e} />
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <HowItWorks />
