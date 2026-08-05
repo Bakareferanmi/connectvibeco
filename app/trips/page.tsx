@@ -1,31 +1,23 @@
-import Link from "next/link";
-import { Search } from "lucide-react";
+"use client";
+
+import { useState, useEffect } from "react";
 import TripCard from "@/components/TripCard";
+import TripCardSkeleton from "@/components/TripCardSkeleton";
 import Footer from "@/components/Footer";
+import Nav from "@/components/Nav";
 import { TRIPS } from "@/lib/data";
 
 export default function TripsPage() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-ink">
-      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
-        <a href="/" className="flex items-center gap-2">
-          <div
-            className="w-7 h-7 rounded-full border-2 border-fuchsia-500"
-            style={{ boxShadow: "0 0 12px rgba(217,70,239,0.6)" }}
-          />
-          <span className="font-display font-semibold tracking-tight">
-            connect vibe
-          </span>
-        </a>
-        <div className="flex items-center gap-3">
-          <Link href="/search" aria-label="Search" className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
-            <Search className="w-4 h-4 text-white/70" />
-          </Link>
-          <button className="text-[13px] font-medium bg-white text-black px-4 py-2 rounded-full">
-            Sign up
-          </button>
-        </div>
-      </nav>
+      <Nav />
 
       <section className="max-w-6xl mx-auto px-6 pt-10 pb-10">
         <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
@@ -41,11 +33,19 @@ export default function TripsPage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-6 pb-24">
-        <div className="grid md:grid-cols-2 gap-5">
-          {TRIPS.map((trip) => (
-            <TripCard key={trip.id} trip={trip} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="grid md:grid-cols-2 gap-5">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <TripCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-5">
+            {TRIPS.map((trip) => (
+              <TripCard key={trip.id} trip={trip} />
+            ))}
+          </div>
+        )}
       </section>
 
       <Footer />

@@ -1,18 +1,40 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search } from "lucide-react";
 import TicketCard from "@/components/TicketCard";
+import TicketCardSkeleton from "@/components/TicketCardSkeleton";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import { EVENTS, CATEGORIES } from "@/lib/data";
 
+const SORT_OPTIONS = ["Date", "Price: low to high", "Price: high to low", "Spots left"] as const;
+type SortOption = (typeof SORT_OPTIONS)[number];
+
+function parseEventDate(dateStr: string): number {
+  const cleaned = dateStr.replace(/^[A-Za-z]+,\s*/, "");
+  const parsed = Date.parse(`${cleaned}, ${new Date().getFullYear()}`);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function parsePrice(priceStr: string): number {
+  const digits = priceStr.replace(/[^0-9.]/g, "");
+  return digits ? parseFloat(digits) : 0;
+}
+
 export default function EventsPage() {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("All");
+  const [sort, setSort] = useState<SortOption>("Date");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filtered = useMemo(() => {
-    return EVENTS.filter((e) => {
+    const result = EVENTS.filter((e) => {
       const matchesCategory = category === "All" || e.category === category;
       const matchesQuery =
         query.trim() === "" ||
@@ -20,7 +42,24 @@ export default function EventsPage() {
         e.location.toLowerCase().includes(query.toLowerCase());
       return matchesCategory && matchesQuery;
     });
-  }, [query, category]);
+
+    const sorted = [...result];
+    switch (sort) {
+      case "Date":
+        sorted.sort((a, b) => parseEventDate(a.date) - parseEventDate(b.date));
+        break;
+      case "Price: low to high":
+        sorted.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+        break;
+      case "Price: high to low":
+        sorted.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+        break;
+      case "Spots left":
+        sorted.sort((a, b) => a.spots - b.spots);
+        break;
+    }
+    return sorted;
+  }, [query, category, sort]);
 
   return (
     <div className="min-h-screen bg-ink">
@@ -45,6 +84,18 @@ export default function EventsPage() {
               className="w-full bg-panel border border-white/10 rounded-full pl-11 pr-4 py-3 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
             />
           </div>
+
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortOption)}
+            className="bg-panel border border-white/10 rounded-full px-4 py-3 text-[14px] text-white focus:outline-none focus:border-fuchsia-500/50 sm:w-56"
+          >
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt} value={opt} className="bg-ink text-white">
+                Sort: {opt}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -65,7 +116,13 @@ export default function EventsPage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-6 pb-24">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <TicketCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="py-20 text-center">
             <p className="text-white/50 text-[15px] mb-4">
               No events match that search.
