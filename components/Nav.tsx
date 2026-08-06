@@ -23,7 +23,7 @@ export default function Nav() {
   return (
     <>
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-full border-2 border-fuchsia-500" />
           <span className="font-display font-semibold tracking-tight">
             connect vibe
@@ -63,6 +63,13 @@ export default function Nav() {
               </button>
               {menuOpen && (
                 <div className="absolute right-0 mt-2 w-44 rounded-xl bg-panel border border-white/10 overflow-hidden shadow-lg z-10">
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMenuOpen(false)}
+                    className="block w-full text-left px-4 py-3 text-[13px] text-white/70 hover:bg-white/5 transition-colors"
+                  >
+                    Dashboard
+                  </Link>
                   <Link
                     href="/profile"
                     onClick={() => setMenuOpen(false)}
@@ -119,6 +126,15 @@ export default function Nav() {
       {mobileMenuOpen && (
         <div className="sm:hidden px-6 pb-5 -mt-2">
           <div className="flex flex-col gap-1 rounded-xl bg-panel border border-white/10 overflow-hidden">
+            {user && (
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-3 text-[14px] text-white/70 hover:bg-white/5 transition-colors border-b border-white/5"
+              >
+                Dashboard
+              </Link>
+            )}
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
