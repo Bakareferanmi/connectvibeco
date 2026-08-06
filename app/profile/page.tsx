@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MapPin, Cake, Pencil, Instagram } from "lucide-react";
+import { MapPin, Cake, Pencil, LayoutDashboard, Instagram } from "lucide-react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import Avatar from "@/components/Avatar";
@@ -45,6 +45,14 @@ export default function ProfilePage() {
       <Nav />
 
       <section className="max-w-2xl mx-auto px-6 pt-12 pb-24">
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-1.5 text-[13px] text-white/40 hover:text-white/70 transition-colors mb-6"
+        >
+          <LayoutDashboard className="w-3.5 h-3.5" />
+          Back to dashboard
+        </Link>
+
         <div className="rounded-2xl bg-panel border border-white/10 p-6 sm:p-8">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center gap-4">
