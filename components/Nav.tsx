@@ -24,7 +24,7 @@ export default function Nav() {
     <>
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
         <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full border-2 border-fuchsia-500" />
+          <img src="/CVC.png" alt="Connect Vibe Co" className="w-8 h-8" />
           <span className="font-display font-semibold tracking-tight">
             connect vibe
           </span>

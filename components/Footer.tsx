@@ -42,10 +42,7 @@ export default function Footer() {
         <div className="grid sm:grid-cols-4 gap-10 mb-12">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div
-                className="w-6 h-6 rounded-full border-2 border-fuchsia-500"
-                style={{ boxShadow: "0 0 10px rgba(217,70,239,0.5)" }}
-              />
+              <img src="/CVC.png" alt="Connect Vibe Co" className="w-7 h-7" />
               <span className="font-display font-semibold tracking-tight">
                 connect vibe
               </span>
