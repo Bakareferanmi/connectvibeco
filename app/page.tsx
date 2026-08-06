@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import TicketCard from "@/components/TicketCard";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
+import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import { EVENTS } from "@/lib/data";
@@ -84,6 +85,7 @@ export default function HomePage() {
 
       <HowItWorks />
       <Testimonials />
+      <FAQ />
       <Footer />
     </div>
   );
