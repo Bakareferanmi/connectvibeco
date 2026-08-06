@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X, Loader2, Check, Minus, Plus, CreditCard } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
+import TicketReceipt from "@/components/TicketReceipt";
 import type { Ticket } from "@/lib/types";
 
 interface BookModalProps {
@@ -18,13 +18,6 @@ function parsePrice(price: string) {
   const match = price.match(/^([^\d]*)(\d+(?:\.\d+)?)/);
   if (!match) return { symbol: "", amount: 0 };
   return { symbol: match[1], amount: parseFloat(match[2]) };
-}
-
-function formatPurchaseTime(iso: string) {
-  const d = new Date(iso);
-  const date = d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-  const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-  return `${date} · ${time}`;
 }
 
 export default function BookModal({ title, meta, price, maxQty = 4, onClose, onConfirm }: BookModalProps) {
@@ -73,29 +66,13 @@ export default function BookModal({ title, meta, price, maxQty = 4, onClose, onC
               {ticket.qty} {ticket.qty === 1 ? "spot" : "spots"} for {ticket.title}
             </p>
 
-            <div className="w-full rounded-2xl bg-ink border border-white/10 p-5 mb-6">
-              <div className="flex justify-center bg-white rounded-xl p-3 mb-4 w-fit mx-auto">
-                <QRCodeSVG value={ticket.ticketId} size={128} bgColor="#ffffff" fgColor="#0a0a0a" />
-              </div>
-              <div className="space-y-2 text-left">
-                <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-white/40 font-mono uppercase tracking-[0.1em]">Ticket ID</span>
-                  <span className="font-mono text-[14px] text-white">{ticket.ticketId}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-white/40 font-mono uppercase tracking-[0.1em]">Spots</span>
-                  <span className="text-[13px] text-white/70">{ticket.qty}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[12px] text-white/40 font-mono uppercase tracking-[0.1em]">Purchased</span>
-                  <span className="text-[13px] text-white/70">{formatPurchaseTime(ticket.purchasedAt)}</span>
-                </div>
-              </div>
+            <div className="w-full mb-2">
+              <TicketReceipt ticket={ticket} />
             </div>
 
             <button
               onClick={onClose}
-              className="w-full bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors"
+              className="w-full bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors mt-3"
             >
               Done
             </button>
