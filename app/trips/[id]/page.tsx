@@ -6,6 +6,7 @@ import Nav from "@/components/Nav";
 import AttendeeStack from "@/components/AttendeeStack";
 import SaveButton from "@/components/SaveButton";
 import BookButton from "@/components/BookButton";
+import EventGallery from "@/components/EventGallery";
 import { TRIPS } from "@/lib/data";
 import type { Accent } from "@/lib/types";
 
@@ -43,6 +44,8 @@ export default function TripDetailPage({ params }: { params: { id: string } }) {
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to trips
         </Link>
+
+        {trip.images && <EventGallery images={trip.images} alt={trip.title} />}
 
         <div className={`h-1.5 w-16 rounded-full ${a.bg} mb-5`} />
 

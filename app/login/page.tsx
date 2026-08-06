@@ -24,6 +24,7 @@ function AuthForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const reason = searchParams.get("reason");
+  const redirect = searchParams.get("redirect");
   const [mode, setMode] = useState<Mode>("login");
 
   const [name, setName] = useState("");
@@ -41,9 +42,13 @@ function AuthForm() {
     setConfirmPassword("");
   }
 
+  function goToDestination() {
+    router.push(redirect || "/dashboard");
+  }
+
   function handleGoogle() {
     loginWithGoogle();
-    router.push("/dashboard");
+    goToDestination();
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -72,7 +77,7 @@ function AuthForm() {
       }
     }
 
-    router.push("/dashboard");
+    goToDestination();
   }
 
   return (

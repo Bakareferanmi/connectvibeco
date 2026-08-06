@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useBooking } from "@/lib/useBooking";
 import { useToast } from "@/lib/toast-context";
@@ -22,12 +22,13 @@ export default function BookButton({ id, title, meta, price, maxQty, label = "Bo
   const { booked, book } = useBooking(id);
   const { showToast } = useToast();
   const router = useRouter();
+  const pathname = usePathname();
   const [modalOpen, setModalOpen] = useState(false);
 
   function handleClick() {
     if (!user) {
       showToast("Sign in to book your spot");
-      router.push("/login?reason=booking");
+      router.push(`/login?reason=booking&redirect=${encodeURIComponent(pathname)}`);
       return;
     }
     if (booked) return;
