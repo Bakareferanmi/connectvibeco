@@ -10,11 +10,47 @@ import ProfileModal from "@/components/ProfileModal";
 import { XIcon, TikTokIcon } from "@/components/SocialIcons";
 import { useAuth } from "@/lib/auth-context";
 
+function ProfileSkeleton() {
+  return (
+    <div className="min-h-screen bg-ink">
+      <Nav />
+      <section className="max-w-2xl mx-auto px-6 pt-12 pb-24 animate-pulse">
+        <div className="h-4 w-32 bg-white/5 rounded mb-6" />
+        <div className="rounded-2xl bg-panel border border-white/10 p-6 sm:p-8">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-white/5 flex-shrink-0" />
+              <div>
+                <div className="h-5 w-32 bg-white/5 rounded mb-2" />
+                <div className="h-3 w-40 bg-white/5 rounded" />
+              </div>
+            </div>
+            <div className="h-8 w-16 bg-white/5 rounded-full flex-shrink-0" />
+          </div>
+          <div className="h-3 w-full bg-white/5 rounded mb-2" />
+          <div className="h-3 w-2/3 bg-white/5 rounded mb-6" />
+          <div className="flex gap-2 mb-6">
+            <div className="h-7 w-24 bg-white/5 rounded-full" />
+            <div className="h-7 w-24 bg-white/5 rounded-full" />
+          </div>
+          <div className="h-3 w-20 bg-white/5 rounded mb-3" />
+          <div className="flex flex-wrap gap-2">
+            <div className="h-7 w-20 bg-white/5 rounded-full" />
+            <div className="h-7 w-16 bg-white/5 rounded-full" />
+            <div className="h-7 w-24 bg-white/5 rounded-full" />
+          </div>
+        </div>
+      </section>
+      <Footer />
+    </div>
+  );
+}
+
 export default function ProfilePage() {
   const { user, loading } = useAuth();
   const [editOpen, setEditOpen] = useState(false);
 
-  if (loading) return null;
+  if (loading) return <ProfileSkeleton />;
 
   if (!user) {
     return (

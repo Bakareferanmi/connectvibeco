@@ -75,6 +75,35 @@ function ItemCard({ item }: { item: (typeof ALL_ITEMS)[number] }) {
   );
 }
 
+function DashboardSkeleton() {
+  return (
+    <div className="min-h-screen bg-ink">
+      <Nav />
+      <section className="max-w-6xl mx-auto px-6 pt-12 pb-8 animate-pulse">
+        <div className="h-3 w-24 bg-white/5 rounded mb-3" />
+        <div className="h-9 w-64 bg-white/5 rounded mb-3" />
+        <div className="h-4 w-72 bg-white/5 rounded" />
+      </section>
+      <section className="max-w-6xl mx-auto px-6 pb-12 animate-pulse">
+        <div className="h-5 w-32 bg-white/5 rounded mb-5" />
+        <div className="flex gap-4 overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="w-[240px] flex-shrink-0 rounded-2xl bg-panel border border-white/10 overflow-hidden">
+              <div className="aspect-[4/3] bg-white/5" />
+              <div className="p-4 space-y-2">
+                <div className="h-3.5 w-3/4 bg-white/5 rounded" />
+                <div className="h-3 w-1/2 bg-white/5 rounded" />
+                <div className="h-3 w-2/3 bg-white/5 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      <Footer />
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -85,7 +114,7 @@ export default function DashboardPage() {
     setSavedIds(readSavedIds());
   }, []);
 
-  if (loading) return null;
+  if (loading) return <DashboardSkeleton />;
 
   if (!user) {
     return (
