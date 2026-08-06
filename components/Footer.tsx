@@ -41,11 +41,8 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="grid sm:grid-cols-4 gap-10 mb-12">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <img src="/CVC.png" alt="Connect Vibe Co" className="w-7 h-7" />
-              <span className="font-display font-semibold tracking-tight">
-                connect vibe
-              </span>
+            <div className="flex items-center mb-3">
+              <img src="/CVC.png" alt="Connect Vibe Co" className="w-11 h-11" />
             </div>
             <p className="text-white/40 text-[13px] leading-relaxed max-w-[220px]">
               Local meetups, weekend trips, and nights out for people who want
