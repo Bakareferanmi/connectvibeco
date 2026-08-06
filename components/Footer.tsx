@@ -73,10 +73,10 @@ export default function Footer() {
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/10">
           <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
-            <p className="text-white/30 text-[13px]">
+            <p className="text-white/45 text-[13px]">
               Connect Vibe Co, all rights reserved.
             </p>
-            <p className="text-white/30 text-[13px]">
+            <p className="text-white/45 text-[13px]">
               Built with ♥️ by{" "}
               <a
                 href="https://beepeethebrand.netlify.app"

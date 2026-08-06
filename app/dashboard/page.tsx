@@ -168,7 +168,7 @@ export default function DashboardPage() {
           )}
         </div>
         {bookedItems.length === 0 ? (
-          <p className="text-white/30 text-[14px]">No bookings yet.</p>
+          <p className="text-white/45 text-[14px]">No bookings yet.</p>
         ) : (
           <div className="flex gap-4 overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0">
             {bookedItems.map((item) => (
@@ -192,7 +192,7 @@ export default function DashboardPage() {
           )}
         </div>
         {savedItems.length === 0 ? (
-          <p className="text-white/30 text-[14px]">Nothing saved yet.</p>
+          <p className="text-white/45 text-[14px]">Nothing saved yet.</p>
         ) : (
           <div className="flex gap-4 overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0">
             {savedItems.map((item) => (

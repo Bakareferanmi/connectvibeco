@@ -207,7 +207,7 @@ function AuthForm() {
       </section>
 
       {mode === "signup" && (
-        <p className="text-center text-[12px] text-white/20 pb-10 px-6">
+        <p className="text-center text-[12px] text-white/35 pb-10 px-6">
           This is a demo account system. Don&apos;t use a real password.
         </p>
       )}

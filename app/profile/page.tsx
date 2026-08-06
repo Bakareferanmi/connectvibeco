@@ -126,7 +126,7 @@ export default function ProfilePage() {
           {user.bio ? (
             <p className="text-white/70 text-[14px] leading-relaxed mb-6">{user.bio}</p>
           ) : (
-            <p className="text-white/30 text-[14px] italic mb-6">No bio yet.</p>
+            <p className="text-white/45 text-[14px] italic mb-6">No bio yet.</p>
           )}
 
           {socialLinks.length > 0 && (

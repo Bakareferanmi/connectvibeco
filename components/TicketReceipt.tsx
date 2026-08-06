@@ -92,7 +92,7 @@ export default function TicketReceipt({ ticket, location, image }: TicketReceipt
             </div>
           </div>
 
-          <p className="text-center text-[10px] text-white/20 font-mono uppercase tracking-[0.15em] mt-4">
+          <p className="text-center text-[10px] text-white/35 font-mono uppercase tracking-[0.15em] mt-4">
             connect vibe co · proof of payment
           </p>
         </div>

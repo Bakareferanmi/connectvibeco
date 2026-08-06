@@ -155,7 +155,7 @@ export default function MembershipPage() {
       </section>
 
       <section className="max-w-3xl mx-auto px-6 pb-24">
-        <p className="text-white/40 text-[13px] leading-relaxed">
+        <p className="text-white/50 text-[13px] leading-relaxed">
           Membership billing is coming soon. Join the waitlist above and you'll be first to know when it opens, with founding-member pricing locked in.
         </p>
       </section>

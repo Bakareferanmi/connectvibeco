@@ -90,7 +90,7 @@ export default function BlogPage() {
           ))}
         </div>
 
-        <p className="text-white/30 text-[13px] mt-10">
+        <p className="text-white/45 text-[13px] mt-10">
           More posts coming soon. Have something to say?{" "}
           <Link href="/contact" className="text-fuchsia-400 hover:text-fuchsia-300 transition-colors">
             Get in touch
