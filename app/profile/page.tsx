@@ -53,6 +53,7 @@ export default function ProfilePage() {
                 <h1 className="font-display text-[22px] font-semibold tracking-tight">{user.name}</h1>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-white/50 mt-1">
                   {user.pronouns && <span>{user.pronouns}</span>}
+                  {user.orientation && <span>{user.orientation}</span>}
                   {user.age && (
                     <span className="flex items-center gap-1">
                       <Cake className="w-3.5 h-3.5" />
