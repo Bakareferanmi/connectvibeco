@@ -8,6 +8,7 @@ import AttendeeStack from "@/components/AttendeeStack";
 import SaveButton from "@/components/SaveButton";
 import BookButton from "@/components/BookButton";
 import EventGallery from "@/components/EventGallery";
+import TicketStatus from "@/components/TicketStatus";
 import { EVENTS } from "@/lib/data";
 import type { Accent } from "@/lib/types";
 
@@ -102,6 +103,8 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
           </div>
           <SaveButton id={event.id} label="Save for later" />
         </div>
+
+        <TicketStatus id={event.id} location={event.location} image={event.images?.[0]} />
       </section>
 
       {related.length > 0 && (
