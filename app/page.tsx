@@ -38,7 +38,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-ink overflow-hidden">
       <Nav />
 
-      <section className="relative max-w-6xl mx-auto px-6 pt-16 pb-20">
+      <section className="relative max-w-6xl mx-auto px-6 pt-4 pb-20">
         <div className="absolute -top-10 right-0 w-[420px] h-[420px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(217,70,239,0.15) 0%, rgba(139,92,246,0.08) 40%, transparent 70%)" }} />
         <div className="relative">
           <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-5">487 people going out this week</p>
