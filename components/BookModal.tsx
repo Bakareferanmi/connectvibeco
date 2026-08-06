@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { X, Loader2, Check, Minus, Plus, CreditCard } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
+import type { Ticket } from "@/lib/types";
 
 interface BookModalProps {
   title: string;
@@ -9,7 +11,7 @@ interface BookModalProps {
   price: string;
   maxQty?: number;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (qty: number) => Ticket;
 }
 
 function parsePrice(price: string) {
@@ -18,9 +20,17 @@ function parsePrice(price: string) {
   return { symbol: match[1], amount: parseFloat(match[2]) };
 }
 
+function formatPurchaseTime(iso: string) {
+  const d = new Date(iso);
+  const date = d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  return `${date} · ${time}`;
+}
+
 export default function BookModal({ title, meta, price, maxQty = 4, onClose, onConfirm }: BookModalProps) {
   const [qty, setQty] = useState(1);
   const [status, setStatus] = useState<"review" | "processing" | "success">("review");
+  const [ticket, setTicket] = useState<Ticket | null>(null);
   const { symbol, amount } = parsePrice(price);
   const fee = Math.max(1, Math.round(amount * 0.05));
   const subtotal = amount * qty;
@@ -29,8 +39,9 @@ export default function BookModal({ title, meta, price, maxQty = 4, onClose, onC
   function handleConfirm() {
     setStatus("processing");
     setTimeout(() => {
+      const created = onConfirm(qty);
+      setTicket(created);
       setStatus("success");
-      onConfirm();
     }, 1100);
   }
 
@@ -41,7 +52,7 @@ export default function BookModal({ title, meta, price, maxQty = 4, onClose, onC
         onClick={status === "review" ? onClose : undefined}
       />
 
-      <div className="relative w-full max-w-sm rounded-2xl bg-panel border border-white/10 p-6">
+      <div className="relative w-full max-w-sm rounded-2xl bg-panel border border-white/10 p-6 max-h-[90vh] overflow-y-auto">
         {status !== "processing" && (
           <button
             onClick={onClose}
@@ -52,15 +63,36 @@ export default function BookModal({ title, meta, price, maxQty = 4, onClose, onC
           </button>
         )}
 
-        {status === "success" ? (
-          <div className="flex flex-col items-center text-center py-6">
+        {status === "success" && ticket ? (
+          <div className="flex flex-col items-center text-center py-4">
             <div className="w-14 h-14 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
               <Check className="w-7 h-7 text-emerald-400" />
             </div>
-            <h2 className="font-display text-[20px] font-semibold tracking-tight mb-2">You're booked</h2>
-            <p className="text-white/60 text-[14px] mb-6">
-              {qty} {qty === 1 ? "spot" : "spots"} for {title}. A confirmation has been sent to your email.
+            <h2 className="font-display text-[20px] font-semibold tracking-tight mb-1">You're booked</h2>
+            <p className="text-white/60 text-[13px] mb-6">
+              {ticket.qty} {ticket.qty === 1 ? "spot" : "spots"} for {ticket.title}
             </p>
+
+            <div className="w-full rounded-2xl bg-ink border border-white/10 p-5 mb-6">
+              <div className="flex justify-center bg-white rounded-xl p-3 mb-4 w-fit mx-auto">
+                <QRCodeSVG value={ticket.ticketId} size={128} bgColor="#ffffff" fgColor="#0a0a0a" />
+              </div>
+              <div className="space-y-2 text-left">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-white/40 font-mono uppercase tracking-[0.1em]">Ticket ID</span>
+                  <span className="font-mono text-[14px] text-white">{ticket.ticketId}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-white/40 font-mono uppercase tracking-[0.1em]">Spots</span>
+                  <span className="text-[13px] text-white/70">{ticket.qty}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] text-white/40 font-mono uppercase tracking-[0.1em]">Purchased</span>
+                  <span className="text-[13px] text-white/70">{formatPurchaseTime(ticket.purchasedAt)}</span>
+                </div>
+              </div>
+            </div>
+
             <button
               onClick={onClose}
               className="w-full bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors"

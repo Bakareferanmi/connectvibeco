@@ -28,3 +28,12 @@ export interface TripListing {
   images?: string[];
 }
 
+export interface Ticket {
+  ticketId: string;
+  itemId: string;
+  title: string;
+  meta: string;
+  price: string;
+  qty: number;
+  purchasedAt: string;
+}

@@ -2,29 +2,35 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Ticket } from "lucide-react";
-import TicketCard from "@/components/TicketCard";
-import TripCard from "@/components/TripCard";
+import { Ticket as TicketIcon } from "lucide-react";
+import BookingCard from "@/components/BookingCard";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import { EVENTS, TRIPS } from "@/lib/data";
+import type { Ticket } from "@/lib/types";
 
 const STORAGE_KEY = "connectvibe:bookings";
 
 export default function BookingsPage() {
-  const [bookedIds, setBookedIds] = useState<string[]>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      setBookedIds(raw ? JSON.parse(raw) : []);
+      setTickets(raw ? JSON.parse(raw) : []);
     } catch {
-      setBookedIds([]);
+      setTickets([]);
     }
   }, []);
 
-  const bookedEvents = EVENTS.filter((e) => bookedIds.includes(e.id));
-  const bookedTrips = TRIPS.filter((t) => bookedIds.includes(t.id));
+  const bookedEvents = EVENTS
+    .map((e) => ({ event: e, ticket: tickets.find((t) => t.itemId === e.id) }))
+    .filter((x): x is { event: (typeof EVENTS)[number]; ticket: Ticket } => !!x.ticket);
+
+  const bookedTrips = TRIPS
+    .map((t) => ({ trip: t, ticket: tickets.find((tk) => tk.itemId === t.id) }))
+    .filter((x): x is { trip: (typeof TRIPS)[number]; ticket: Ticket } => !!x.ticket);
+
   const isEmpty = bookedEvents.length === 0 && bookedTrips.length === 0;
 
   return (
@@ -43,7 +49,7 @@ export default function BookingsPage() {
       <section className="max-w-6xl mx-auto px-6 pb-24">
         {isEmpty ? (
           <div className="py-20 text-center">
-            <Ticket className="w-8 h-8 text-white/20 mx-auto mb-4" />
+            <TicketIcon className="w-8 h-8 text-white/20 mx-auto mb-4" />
             <p className="text-white/50 text-[15px] mb-4">
               No bookings yet. Book an event or trip and it'll show up here.
             </p>
@@ -59,8 +65,14 @@ export default function BookingsPage() {
                   Events
                 </h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {bookedEvents.map((e) => (
-                    <TicketCard key={e.id} event={e} />
+                  {bookedEvents.map(({ event, ticket }) => (
+                    <BookingCard
+                      key={event.id}
+                      ticket={ticket}
+                      href={`/events/${event.id}`}
+                      location={event.location}
+                      image={event.images?.[0]}
+                    />
                   ))}
                 </div>
               </div>
@@ -72,8 +84,14 @@ export default function BookingsPage() {
                   Trips
                 </h2>
                 <div className="grid sm:grid-cols-2 gap-5">
-                  {bookedTrips.map((t) => (
-                    <TripCard key={t.id} trip={t} />
+                  {bookedTrips.map(({ trip, ticket }) => (
+                    <BookingCard
+                      key={trip.id}
+                      ticket={ticket}
+                      href={`/trips/${trip.id}`}
+                      location={trip.location}
+                      image={trip.images?.[0]}
+                    />
                   ))}
                 </div>
               </div>

@@ -35,10 +35,6 @@ export default function BookButton({ id, title, meta, price, maxQty, label = "Bo
     setModalOpen(true);
   }
 
-  function handleConfirmed() {
-    book();
-  }
-
   return (
     <>
       <button
@@ -59,7 +55,7 @@ export default function BookButton({ id, title, meta, price, maxQty, label = "Bo
           price={price}
           maxQty={maxQty}
           onClose={() => setModalOpen(false)}
-          onConfirm={handleConfirmed}
+          onConfirm={(qty) => book({ title, meta, price, qty })}
         />
       )}
     </>

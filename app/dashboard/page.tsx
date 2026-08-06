@@ -2,19 +2,30 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Calendar, MapPin, Ticket, Bookmark, ArrowRight } from "lucide-react";
+import { Calendar, MapPin, Ticket as TicketIcon, Bookmark, ArrowRight } from "lucide-react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/lib/auth-context";
 import { EVENTS, TRIPS } from "@/lib/data";
+import type { Ticket } from "@/lib/types";
 
 const BOOKINGS_KEY = "connectvibe:bookings";
 const SAVED_KEY = "connectvibe:saved";
 
-function readIds(key: string): string[] {
+function readTickets(): Ticket[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(key);
+    const raw = localStorage.getItem(BOOKINGS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function readSavedIds(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(SAVED_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -66,12 +77,12 @@ function ItemCard({ item }: { item: (typeof ALL_ITEMS)[number] }) {
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
-  const [bookingIds, setBookingIds] = useState<string[]>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [savedIds, setSavedIds] = useState<string[]>([]);
 
   useEffect(() => {
-    setBookingIds(readIds(BOOKINGS_KEY));
-    setSavedIds(readIds(SAVED_KEY));
+    setTickets(readTickets());
+    setSavedIds(readSavedIds());
   }, []);
 
   if (loading) return null;
@@ -94,7 +105,7 @@ export default function DashboardPage() {
     );
   }
 
-  const bookedItems = ALL_ITEMS.filter((i) => bookingIds.includes(i.id));
+  const bookedItems = ALL_ITEMS.filter((i) => tickets.some((t) => t.itemId === i.id));
   const savedItems = ALL_ITEMS.filter((i) => savedIds.includes(i.id));
   const firstName = user.name.split(" ")[0];
 
@@ -117,7 +128,7 @@ export default function DashboardPage() {
       <section className="max-w-6xl mx-auto px-6 pb-12">
         <div className="flex items-center justify-between mb-5">
           <h2 className="font-display text-[18px] font-semibold tracking-tight flex items-center gap-2">
-            <Ticket className="w-4 h-4 text-fuchsia-400" />
+            <TicketIcon className="w-4 h-4 text-fuchsia-400" />
             Your bookings
           </h2>
           {bookedItems.length > 0 && (
