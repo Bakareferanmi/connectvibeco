@@ -43,7 +43,7 @@ function AuthForm() {
 
   function handleGoogle() {
     loginWithGoogle();
-    router.push("/");
+    router.push("/dashboard");
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -72,7 +72,7 @@ function AuthForm() {
       }
     }
 
-    router.push("/");
+    router.push("/dashboard");
   }
 
   return (
