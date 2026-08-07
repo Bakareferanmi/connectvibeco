@@ -1,8 +1,13 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { Check, Sparkles } from "lucide-react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import MembershipModal from "@/components/MembershipModal";
+import { useAuth } from "@/lib/auth-context";
+import { useMembership } from "@/lib/useMembership";
 import { useToast } from "@/lib/toast-context";
 
 type TierAccent = "violet" | "teal" | "magenta";
@@ -76,10 +81,26 @@ const TIERS: Tier[] = [
 ];
 
 export default function MembershipPage() {
+  const { user } = useAuth();
+  const { membership, join } = useMembership();
   const { showToast } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [activeTier, setActiveTier] = useState<Tier | null>(null);
 
-  function handleJoin(tierName: string) {
-    showToast(`You're on the ${tierName} waitlist — we'll email you when it opens`);
+  function handleJoinClick(tier: Tier) {
+    if (!user) {
+      showToast("Sign in to join membership");
+      router.push(`/login?reason=membership&redirect=${encodeURIComponent(pathname)}`);
+      return;
+    }
+    if (membership?.tierId === tier.id) return;
+    setActiveTier(tier);
+  }
+
+  function handleConfirmed() {
+    if (!activeTier) return;
+    join(activeTier.id, activeTier.name, activeTier.price, activeTier.period);
   }
 
   return (
@@ -96,6 +117,12 @@ export default function MembershipPage() {
         <p className="text-white/60 text-[15px] leading-relaxed max-w-xl">
           Priority access, member pricing, and invites before things go public. Pick a plan that fits how often you show up.
         </p>
+        {membership && (
+          <p className="mt-4 inline-flex items-center gap-1.5 text-[13px] text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full">
+            <Check className="w-3.5 h-3.5" />
+            {membership.tierName} plan active
+          </p>
+        )}
       </section>
 
       <section className="max-w-6xl mx-auto px-6 pb-16">
@@ -103,6 +130,7 @@ export default function MembershipPage() {
           {TIERS.map((tier) => {
             const a = ACCENTS[tier.accent];
             const highlighted = tier.id === "yearly";
+            const isCurrent = membership?.tierId === tier.id;
             return (
               <div
                 key={tier.id}
@@ -110,12 +138,18 @@ export default function MembershipPage() {
                   highlighted ? `${a.border} ring-1 ${a.ring}` : "border-white/10"
                 }`}
               >
-                {tier.badge && (
+                {tier.badge && !isCurrent && (
                   <span
                     className={`absolute -top-3 left-6 flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.1em] px-2.5 py-1 rounded-full ${a.bg} text-white`}
                   >
                     {highlighted && <Sparkles className="w-3 h-3" />}
                     {tier.badge}
+                  </span>
+                )}
+                {isCurrent && (
+                  <span className="absolute -top-3 left-6 flex items-center gap-1 text-[10px] font-mono uppercase tracking-[0.1em] px-2.5 py-1 rounded-full bg-emerald-500 text-white">
+                    <Check className="w-3 h-3" />
+                    Current plan
                   </span>
                 )}
 
@@ -139,14 +173,17 @@ export default function MembershipPage() {
                 </ul>
 
                 <button
-                  onClick={() => handleJoin(tier.name)}
+                  onClick={() => handleJoinClick(tier)}
+                  disabled={isCurrent}
                   className={`w-full text-[14px] font-medium px-6 py-3 rounded-full transition-colors ${
-                    highlighted
+                    isCurrent
+                      ? "bg-white/10 text-white/50 cursor-default"
+                      : highlighted
                       ? `${a.bg} text-white hover:opacity-90`
                       : "bg-white/5 text-white/80 hover:bg-white/10"
                   }`}
                 >
-                  Join {tier.name}
+                  {isCurrent ? "Current plan" : `Join ${tier.name}`}
                 </button>
               </div>
             );
@@ -156,11 +193,21 @@ export default function MembershipPage() {
 
       <section className="max-w-3xl mx-auto px-6 pb-24">
         <p className="text-white/50 text-[13px] leading-relaxed">
-          Membership billing is coming soon. Join the waitlist above and you'll be first to know when it opens, with founding-member pricing locked in.
+          This is a demo checkout — no real charge is made.
         </p>
       </section>
 
       <Footer />
+
+      {activeTier && (
+        <MembershipModal
+          tierName={activeTier.name}
+          price={activeTier.price}
+          period={activeTier.period}
+          onClose={() => setActiveTier(null)}
+          onConfirm={handleConfirmed}
+        />
+      )}
     </div>
   );
 }
