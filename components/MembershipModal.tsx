@@ -1,23 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { X, Loader2, Check, CreditCard, Sparkles } from "lucide-react";
+import { X, Loader2, Check, CreditCard } from "lucide-react";
+import MembershipCard from "@/components/MembershipCard";
+import type { Membership } from "@/lib/useMembership";
 
 interface MembershipModalProps {
   tierName: string;
   price: string;
   period: string;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => Membership;
 }
 
 export default function MembershipModal({ tierName, price, period, onClose, onConfirm }: MembershipModalProps) {
   const [status, setStatus] = useState<"review" | "processing" | "success">("review");
+  const [membership, setMembership] = useState<Membership | null>(null);
 
   function handleConfirm() {
     setStatus("processing");
     setTimeout(() => {
-      onConfirm();
+      const created = onConfirm();
+      setMembership(created);
       setStatus("success");
     }, 1100);
   }
@@ -40,8 +44,8 @@ export default function MembershipModal({ tierName, price, period, onClose, onCo
           </button>
         )}
 
-        {status === "success" ? (
-          <div className="flex flex-col items-center text-center py-4">
+        {status === "success" && membership ? (
+          <div className="flex flex-col items-center text-center py-1">
             <div className="w-14 h-14 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
               <Check className="w-7 h-7 text-emerald-400" />
             </div>
@@ -52,16 +56,13 @@ export default function MembershipModal({ tierName, price, period, onClose, onCo
               {tierName} plan is now active on your account.
             </p>
 
-            <div className="w-full rounded-xl bg-ink border border-white/10 p-4 flex items-center gap-3 mb-6">
-              <Sparkles className="w-5 h-5 text-fuchsia-400 flex-shrink-0" />
-              <p className="text-[13px] text-white/70 text-left">
-                Priority access and member pricing are live on your account now.
-              </p>
+            <div className="w-full mb-2">
+              <MembershipCard membership={membership} />
             </div>
 
             <button
               onClick={onClose}
-              className="w-full bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors"
+              className="w-full bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors mt-3"
             >
               Done
             </button>

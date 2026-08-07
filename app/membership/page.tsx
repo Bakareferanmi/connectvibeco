@@ -99,8 +99,8 @@ export default function MembershipPage() {
   }
 
   function handleConfirmed() {
-    if (!activeTier) return;
-    join(activeTier.id, activeTier.name, activeTier.price, activeTier.period);
+    if (!activeTier) throw new Error("No tier selected");
+    return join(activeTier.id, activeTier.name, activeTier.price, activeTier.period);
   }
 
   return (

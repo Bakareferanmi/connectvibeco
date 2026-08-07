@@ -10,6 +10,7 @@ export interface Membership {
   price: string;
   period: string;
   joinedAt: string;
+  memberNumber: string;
 }
 
 function readMembership(): Membership | null {
@@ -26,6 +27,15 @@ function writeMembership(m: Membership) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
 }
 
+function generateMemberNumber(): string {
+  const digits = "0123456789";
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += digits[Math.floor(Math.random() * digits.length)];
+  }
+  return `CVC-${code}`;
+}
+
 export function useMembership() {
   const [membership, setMembership] = useState<Membership | null>(null);
 
@@ -34,12 +44,14 @@ export function useMembership() {
   }, []);
 
   function join(tierId: string, tierName: string, price: string, period: string): Membership {
+    const existing = readMembership();
     const record: Membership = {
       tierId,
       tierName,
       price,
       period,
-      joinedAt: new Date().toISOString(),
+      joinedAt: existing?.joinedAt ?? new Date().toISOString(),
+      memberNumber: existing?.memberNumber ?? generateMemberNumber(),
     };
     writeMembership(record);
     setMembership(record);
