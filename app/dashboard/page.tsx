@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Calendar, MapPin, Ticket as TicketIcon, Bookmark, ArrowRight, Sparkles } from "lucide-react";
+import { Calendar, MapPin, Ticket as TicketIcon, Bookmark, ArrowRight, Compass } from "lucide-react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/lib/auth-context";
@@ -160,7 +160,7 @@ export default function DashboardPage() {
         <section className="max-w-6xl mx-auto px-6 pb-12">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-display text-[18px] font-semibold tracking-tight flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-cyan-400" />
+              <Compass className="w-4 h-4 text-cyan-400" />
               Available now
             </h2>
             <Link href="/events" className="text-[13px] text-white/40 hover:text-white/70 transition-colors flex items-center gap-1">
