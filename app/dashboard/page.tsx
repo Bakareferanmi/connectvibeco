@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Calendar, MapPin, Ticket as TicketIcon, Bookmark, ArrowRight } from "lucide-react";
+import { Calendar, MapPin, Ticket as TicketIcon, Bookmark, ArrowRight, Sparkles } from "lucide-react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/lib/auth-context";
@@ -136,6 +136,8 @@ export default function DashboardPage() {
 
   const bookedItems = ALL_ITEMS.filter((i) => tickets.some((t) => t.itemId === i.id));
   const savedItems = ALL_ITEMS.filter((i) => savedIds.includes(i.id));
+  const bookedOrSavedIds = new Set([...bookedItems.map((i) => i.id), ...savedItems.map((i) => i.id)]);
+  const availableItems = ALL_ITEMS.filter((i) => !bookedOrSavedIds.has(i.id)).slice(0, 6);
   const firstName = user.name.split(" ")[0];
 
   return (
@@ -153,6 +155,26 @@ export default function DashboardPage() {
             : "Nothing booked or saved yet. Time to find your people."}
         </p>
       </section>
+
+      {availableItems.length > 0 && (
+        <section className="max-w-6xl mx-auto px-6 pb-12">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-display text-[18px] font-semibold tracking-tight flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-cyan-400" />
+              Available now
+            </h2>
+            <Link href="/events" className="text-[13px] text-white/40 hover:text-white/70 transition-colors flex items-center gap-1">
+              View all
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0">
+            {availableItems.map((item) => (
+              <ItemCard key={item.id} item={item} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="max-w-6xl mx-auto px-6 pb-12">
         <div className="flex items-center justify-between mb-5">
