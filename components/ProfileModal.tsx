@@ -72,7 +72,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      alert("Please choose an image under 2MB.");
+      showToast("Please choose an image under 2MB.");
       return;
     }
     const reader = new FileReader();
