@@ -3,7 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { ToastProvider } from "@/lib/toast-context";
 
-const SITE_URL = "https://connectvibeco-seven.vercel.app";
+const SITE_URL = "https://connectvibeco.vercel.app";
 const SITE_NAME = "Connect Vibe Co";
 const TITLE = "Connect Vibe Co, Find your people";
 const DESCRIPTION =
