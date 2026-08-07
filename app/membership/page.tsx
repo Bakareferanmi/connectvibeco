@@ -79,7 +79,7 @@ export default function MembershipPage() {
   const { showToast } = useToast();
 
   function handleJoin(tierName: string) {
-    showToast(`You're on the ${tierName} waitlist`);
+    showToast(`You're on the ${tierName} waitlist — we'll email you when it opens`);
   }
 
   return (
