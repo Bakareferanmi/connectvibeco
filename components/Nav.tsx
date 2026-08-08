@@ -24,7 +24,7 @@ export default function Nav() {
     <>
       <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
         <Link href={user ? "/dashboard" : "/"} className="flex items-center">
-          <img src="/CVC.png" alt="Connect Vibe Co" className="w-12 h-12" />
+          <img src="/CVC.png" alt="Connect Vibe Co" className="w-8 h-8" />
         </Link>
 
         <div className="hidden sm:flex items-center gap-6 text-[14px] text-white/60">
