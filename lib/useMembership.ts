@@ -44,14 +44,13 @@ export function useMembership() {
   }, []);
 
   function join(tierId: string, tierName: string, price: string, period: string): Membership {
-    const existing = readMembership();
     const record: Membership = {
       tierId,
       tierName,
       price,
       period,
-      joinedAt: existing?.joinedAt ?? new Date().toISOString(),
-      memberNumber: existing?.memberNumber ?? generateMemberNumber(),
+      joinedAt: new Date().toISOString(),
+      memberNumber: generateMemberNumber(),
     };
     writeMembership(record);
     setMembership(record);

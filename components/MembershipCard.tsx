@@ -64,13 +64,16 @@ export default function MembershipCard({ membership }: MembershipCardProps) {
 
         <div className="relative h-full flex flex-col justify-between">
           <div className="flex items-start justify-between">
-            <div>
-              <p className="font-display font-semibold text-white text-[15px] tracking-tight">
-                connect vibe
-              </p>
-              <p className="text-white/60 text-[9px] font-mono uppercase tracking-[0.2em] mt-0.5">
-                Member
-              </p>
+            <div className="flex items-center gap-2">
+              <img src="/CVC.png" alt="" className="w-7 h-7 flex-shrink-0" crossOrigin="anonymous" />
+              <div>
+                <p className="font-display font-semibold text-white text-[15px] tracking-tight">
+                  connect vibe
+                </p>
+                <p className="text-white/60 text-[9px] font-mono uppercase tracking-[0.2em] mt-0.5">
+                  Member
+                </p>
+              </div>
             </div>
             <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-white bg-white/15 backdrop-blur-sm px-2.5 py-1 rounded-full">
               {membership.tierName}
