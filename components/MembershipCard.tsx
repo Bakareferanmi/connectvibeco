@@ -65,7 +65,13 @@ export default function MembershipCard({ membership }: MembershipCardProps) {
         <div className="relative h-full flex flex-col justify-between">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
-              <img src="/CVC.png" alt="" className="w-7 h-7 flex-shrink-0" crossOrigin="anonymous" />
+              <img
+                src="/CVC.png"
+                alt=""
+                className="w-7 h-7 flex-shrink-0"
+                style={{ filter: "brightness(0) invert(1)" }}
+                crossOrigin="anonymous"
+              />
               <div>
                 <p className="font-display font-semibold text-white text-[15px] tracking-tight">
                   connect vibe
