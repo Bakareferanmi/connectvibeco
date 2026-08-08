@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { MapPin, Cake, Pencil, LayoutDashboard, Instagram } from "lucide-react";
+import { MapPin, Cake, Pencil, LayoutDashboard, Instagram, Sparkles } from "lucide-react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import Avatar from "@/components/Avatar";
 import ProfileModal from "@/components/ProfileModal";
+import MembershipCard from "@/components/MembershipCard";
 import { XIcon, TikTokIcon } from "@/components/SocialIcons";
 import { useAuth } from "@/lib/auth-context";
+import { useMembership } from "@/lib/useMembership";
 
 function ProfileSkeleton() {
   return (
@@ -48,6 +50,7 @@ function ProfileSkeleton() {
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
+  const { membership } = useMembership();
   const [editOpen, setEditOpen] = useState(false);
 
   if (loading) return <ProfileSkeleton />;
@@ -89,7 +92,7 @@ export default function ProfilePage() {
           Back to dashboard
         </Link>
 
-        <div className="rounded-2xl bg-panel border border-white/10 p-6 sm:p-8">
+        <div className="rounded-2xl bg-panel border border-white/10 p-6 sm:p-8 mb-6">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center gap-4">
               <Avatar user={user} size={64} />
@@ -159,6 +162,26 @@ export default function ProfilePage() {
                   </span>
                 ))}
               </div>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-3">Membership</p>
+          {membership ? (
+            <MembershipCard membership={membership} />
+          ) : (
+            <div className="rounded-2xl bg-panel border border-white/10 p-6 text-center">
+              <Sparkles className="w-6 h-6 text-fuchsia-400 mx-auto mb-3" />
+              <p className="text-white/60 text-[14px] mb-4">
+                You're not a member yet — join for priority access and member pricing.
+              </p>
+              <Link
+                href="/membership"
+                className="inline-block bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full"
+              >
+                View plans
+              </Link>
             </div>
           )}
         </div>
