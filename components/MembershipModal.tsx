@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Loader2, Check, CreditCard } from "lucide-react";
 import MembershipCard from "@/components/MembershipCard";
+import { useModalA11y } from "@/lib/useModalA11y";
 import type { Membership } from "@/lib/useMembership";
 
 interface MembershipModalProps {
@@ -16,6 +17,7 @@ interface MembershipModalProps {
 export default function MembershipModal({ tierName, price, period, onClose, onConfirm }: MembershipModalProps) {
   const [status, setStatus] = useState<"review" | "processing" | "success">("review");
   const [membership, setMembership] = useState<Membership | null>(null);
+  const containerRef = useModalA11y(onClose, status !== "processing");
 
   function handleConfirm() {
     setStatus("processing");
@@ -33,7 +35,14 @@ export default function MembershipModal({ tierName, price, period, onClose, onCo
         onClick={status === "review" ? onClose : undefined}
       />
 
-      <div className="relative w-full max-w-sm rounded-2xl bg-panel border border-white/10 p-6 max-h-[90vh] overflow-y-auto">
+      <div
+        ref={containerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="membership-modal-title"
+        tabIndex={-1}
+        className="relative w-full max-w-sm rounded-2xl bg-panel border border-white/10 p-6 max-h-[90vh] overflow-y-auto focus:outline-none"
+      >
         {status !== "processing" && (
           <button
             onClick={onClose}
@@ -49,7 +58,7 @@ export default function MembershipModal({ tierName, price, period, onClose, onCo
             <div className="w-14 h-14 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
               <Check className="w-7 h-7 text-emerald-400" />
             </div>
-            <h2 className="font-display text-[20px] font-semibold tracking-tight mb-1">
+            <h2 id="membership-modal-title" className="font-display text-[20px] font-semibold tracking-tight mb-1">
               You're a member
             </h2>
             <p className="text-white/60 text-[13px] mb-6">
@@ -69,7 +78,7 @@ export default function MembershipModal({ tierName, price, period, onClose, onCo
           </div>
         ) : (
           <>
-            <h2 className="font-display text-[20px] font-semibold tracking-tight mb-1 pr-6">
+            <h2 id="membership-modal-title" className="font-display text-[20px] font-semibold tracking-tight mb-1 pr-6">
               Confirm membership
             </h2>
             <p className="text-white/50 text-[13px] mb-6">

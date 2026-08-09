@@ -5,6 +5,7 @@ import { X as CloseIcon, Upload, Check, Instagram } from "lucide-react";
 import { XIcon, TikTokIcon } from "@/components/SocialIcons";
 import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/lib/toast-context";
+import { useModalA11y } from "@/lib/useModalA11y";
 import Avatar, { AVATAR_PRESETS } from "@/components/Avatar";
 
 const PRONOUN_OPTIONS = ["She/her", "He/him", "They/them", "Ask me"];
@@ -42,6 +43,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const { user, updateProfile } = useAuth();
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useModalA11y(onClose, true);
 
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? "");
   const [avatarPreset, setAvatarPreset] = useState(user?.avatarPreset ?? "magenta");
@@ -111,9 +113,16 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl bg-panel border border-white/10 p-6">
+      <div
+        ref={containerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="profile-modal-title"
+        tabIndex={-1}
+        className="relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl bg-panel border border-white/10 p-6 focus:outline-none"
+      >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-display text-[20px] font-semibold tracking-tight">Edit profile</h2>
+          <h2 id="profile-modal-title" className="font-display text-[20px] font-semibold tracking-tight">Edit profile</h2>
           <button onClick={onClose} aria-label="Close" className="text-white/40 hover:text-white/70 transition-colors">
             <CloseIcon className="w-5 h-5" />
           </button>
