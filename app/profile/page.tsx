@@ -86,7 +86,7 @@ export default function ProfilePage() {
       <section className="max-w-2xl mx-auto px-6 pt-12 pb-24">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-[13px] text-white/40 hover:text-white/70 transition-colors mb-6"
+          className="inline-flex items-center gap-1.5 text-[13px] text-white/50 hover:text-white/70 transition-colors mb-6"
         >
           <LayoutDashboard className="w-3.5 h-3.5" />
           Back to dashboard
@@ -151,7 +151,7 @@ export default function ProfilePage() {
 
           {user.interests && user.interests.length > 0 && (
             <div>
-              <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-3">Interests</p>
+              <p className="font-mono text-white/50 text-[11px] uppercase tracking-[0.15em] mb-3">Interests</p>
               <div className="flex flex-wrap gap-2">
                 {user.interests.map((interest) => (
                   <span
@@ -167,7 +167,7 @@ export default function ProfilePage() {
         </div>
 
         <div>
-          <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-3">Membership</p>
+          <p className="font-mono text-white/50 text-[11px] uppercase tracking-[0.15em] mb-3">Membership</p>
           {membership ? (
             <MembershipCard membership={membership} />
           ) : (
