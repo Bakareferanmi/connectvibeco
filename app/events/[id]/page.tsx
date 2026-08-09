@@ -43,7 +43,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
       <Nav />
 
       <section className="max-w-3xl mx-auto px-6 pt-8 pb-16">
-        <Link href="/events" className="inline-flex items-center gap-1.5 text-[13px] text-white/40 hover:text-white/70 transition-colors mb-8">
+        <Link href="/events" className="inline-flex items-center gap-1.5 text-[13px] text-white/50 hover:text-white/70 transition-colors mb-8">
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to events
         </Link>
@@ -89,7 +89,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
         <div className="rounded-2xl bg-panel border border-white/10 p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="font-mono text-white/40 text-[11px] uppercase tracking-[0.15em] mb-1">Price</p>
+              <p className="font-mono text-white/50 text-[11px] uppercase tracking-[0.15em] mb-1">Price</p>
               <span className="font-mono text-white text-2xl">{event.price}</span>
             </div>
             <BookButton

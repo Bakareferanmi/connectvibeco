@@ -85,7 +85,7 @@ function AuthForm() {
       <Nav />
 
       <section className="max-w-sm mx-auto px-6 pt-16 pb-24">
-        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
+        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-3">
           {mode === "login" ? "Welcome back" : "Join connect vibe"}
         </p>
 
@@ -126,7 +126,7 @@ function AuthForm() {
 
         <div className="flex items-center gap-3 mb-5">
           <div className="h-px bg-white/10 flex-1" />
-          <span className="text-[12px] text-white/30 font-mono uppercase tracking-[0.1em]">or</span>
+          <span className="text-[12px] text-white/50 font-mono uppercase tracking-[0.1em]">or</span>
           <div className="h-px bg-white/10 flex-1" />
         </div>
 
@@ -170,7 +170,7 @@ function AuthForm() {
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/70 transition-colors"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -193,7 +193,7 @@ function AuthForm() {
                   type="button"
                   onClick={() => setShowConfirmPassword((v) => !v)}
                   aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/70 transition-colors"
                 >
                   {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -217,7 +217,7 @@ function AuthForm() {
       </section>
 
       {mode === "signup" && (
-        <p className="text-center text-[12px] text-white/35 pb-10 px-6">
+        <p className="text-center text-[12px] text-white/50 pb-10 px-6">
           This is a demo account system. Don&apos;t use a real password.
         </p>
       )}

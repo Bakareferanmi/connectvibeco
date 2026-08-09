@@ -60,7 +60,7 @@ export default function BlogPage() {
       <Nav />
 
       <section className="max-w-3xl mx-auto px-6 pt-10 pb-8">
-        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
+        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-3">
           Blog
         </p>
         <h1 className="font-display text-[32px] sm:text-[44px] font-semibold tracking-tight leading-[1.1] mb-4">
@@ -76,7 +76,7 @@ export default function BlogPage() {
               onClick={() => setSelected(post)}
               className="w-full text-left rounded-2xl bg-panel border border-white/10 p-6 hover:border-white/20 transition-colors"
             >
-              <div className="flex items-center gap-2 text-[12px] text-white/40 mb-3">
+              <div className="flex items-center gap-2 text-[12px] text-white/50 mb-3">
                 <Calendar className="w-3.5 h-3.5" />
                 {post.date}
               </div>

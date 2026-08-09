@@ -38,13 +38,13 @@ export default function PrivacyPage() {
       <Nav />
 
       <section className="max-w-2xl mx-auto px-6 pt-10 pb-24">
-        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
+        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-3">
           Legal
         </p>
         <h1 className="font-display text-[32px] sm:text-[40px] font-semibold tracking-tight leading-[1.1] mb-3">
           Privacy policy
         </h1>
-        <p className="text-white/40 text-[13px] mb-10">Last updated August 2026</p>
+        <p className="text-white/50 text-[13px] mb-10">Last updated August 2026</p>
 
         <div className="space-y-8">
           {SECTIONS.map((s) => (

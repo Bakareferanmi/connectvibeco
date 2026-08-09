@@ -40,7 +40,7 @@ export default function SearchPage() {
       <Nav />
 
       <section className="max-w-3xl mx-auto px-6 pt-10 pb-8">
-        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
+        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-3">
           Search
         </p>
         <h1 className="font-display text-[32px] sm:text-[44px] font-semibold tracking-tight mb-8">
@@ -62,7 +62,7 @@ export default function SearchPage() {
 
       {hasQuery && (
         <section className="max-w-6xl mx-auto px-6 pb-24">
-          <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-8">
+          <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-8">
             {totalResults} {totalResults === 1 ? "result" : "results"} for &quot;{query}&quot;
           </p>
 

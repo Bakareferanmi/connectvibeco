@@ -20,7 +20,7 @@ export default function TripsPage() {
       <Nav />
 
       <section className="max-w-6xl mx-auto px-6 pt-10 pb-10">
-        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
+        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-3">
           {TRIPS.length} trips open for booking
         </p>
         <h1 className="font-display text-[36px] sm:text-[48px] font-semibold tracking-tight mb-4 max-w-xl">

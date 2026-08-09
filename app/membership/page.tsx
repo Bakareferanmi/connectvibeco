@@ -108,7 +108,7 @@ export default function MembershipPage() {
       <Nav />
 
       <section className="max-w-6xl mx-auto px-6 pt-10 pb-8">
-        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
+        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-3">
           Membership
         </p>
         <h1 className="font-display text-[32px] sm:text-[44px] font-semibold tracking-tight leading-[1.1] mb-4">
@@ -158,9 +158,9 @@ export default function MembershipPage() {
                 </p>
                 <div className="flex items-baseline gap-1 mb-1">
                   <span className="font-display text-[32px] font-semibold tracking-tight">{tier.price}</span>
-                  <span className="text-white/40 text-[14px]">{tier.period}</span>
+                  <span className="text-white/50 text-[14px]">{tier.period}</span>
                 </div>
-                <p className="text-white/40 text-[12px] mb-1">{tier.perMonth}</p>
+                <p className="text-white/50 text-[12px] mb-1">{tier.perMonth}</p>
                 <p className="text-white/50 text-[13px] mb-6">{tier.tagline}</p>
 
                 <ul className="space-y-3 mb-8 flex-1">

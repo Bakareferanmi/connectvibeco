@@ -38,7 +38,7 @@ export default function BookingsPage() {
       <Nav />
 
       <section className="max-w-6xl mx-auto px-6 pt-10 pb-8">
-        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
+        <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-3">
           {bookedEvents.length + bookedTrips.length} booked
         </p>
         <h1 className="font-display text-[36px] sm:text-[48px] font-semibold tracking-tight mb-8">
