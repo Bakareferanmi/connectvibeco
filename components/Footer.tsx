@@ -44,7 +44,7 @@ export default function Footer() {
             <div className="flex items-center mb-3">
               <img src="/CVC.png" alt="Connect Vibe Co" className="w-9 h-9" />
             </div>
-            <p className="text-white/40 text-[13px] leading-relaxed max-w-[220px]">
+            <p className="text-white/50 text-[13px] leading-relaxed max-w-[220px]">
               Local meetups, weekend trips, and nights out for people who want
               to show up.
             </p>
@@ -52,7 +52,7 @@ export default function Footer() {
 
           {COLUMNS.map((col) => (
             <div key={col.heading}>
-              <p className="font-mono text-[11px] tracking-[0.15em] uppercase text-white/40 mb-4">
+              <p className="font-mono text-[11px] tracking-[0.15em] uppercase text-white/50 mb-4">
                 {col.heading}
               </p>
               <ul className="space-y-3">
