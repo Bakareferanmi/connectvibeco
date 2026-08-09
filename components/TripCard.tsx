@@ -20,6 +20,7 @@ export default function TripCard({ trip }: { trip: TripListing }) {
   const { saved, toggle } = useSaved(trip.id);
   const { showToast } = useToast();
   const isFillingFast = trip.spots <= LOW_SPOTS_THRESHOLD;
+  const coverImage = trip.images?.[0];
 
   function handleToggle(e: React.MouseEvent) {
     const willBeSaved = !saved;
@@ -30,7 +31,7 @@ export default function TripCard({ trip }: { trip: TripListing }) {
   return (
     <Link
       href={`/trips/${trip.id}`}
-      className="relative block rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors"
+      className="relative block rounded-2xl bg-panel border border-white/10 overflow-hidden hover:border-white/20 transition-colors group"
     >
       <button
         onClick={handleToggle}
@@ -42,7 +43,19 @@ export default function TripCard({ trip }: { trip: TripListing }) {
         />
       </button>
 
-      <div className={`h-1.5 ${a.bg}`} />
+      {coverImage ? (
+        <div className="aspect-[16/9] w-full overflow-hidden bg-white/5">
+          <img
+            src={coverImage}
+            alt={trip.title}
+            loading="lazy"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      ) : (
+        <div className={`h-1.5 ${a.bg}`} />
+      )}
+
       <div className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div>

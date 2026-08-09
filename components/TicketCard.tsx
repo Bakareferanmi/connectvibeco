@@ -20,6 +20,7 @@ export default function TicketCard({ event }: { event: EventListing }) {
   const { saved, toggle } = useSaved(event.id);
   const { showToast } = useToast();
   const isFillingFast = event.spots <= LOW_SPOTS_THRESHOLD;
+  const coverImage = event.images?.[0];
 
   function handleToggle(e: React.MouseEvent) {
     const willBeSaved = !saved;
@@ -41,6 +42,17 @@ export default function TicketCard({ event }: { event: EventListing }) {
           className={`w-4 h-4 transition-colors ${saved ? "fill-fuchsia-500 text-fuchsia-500" : "text-white/70"}`}
         />
       </button>
+
+      {coverImage && (
+        <div className="aspect-[16/10] w-full overflow-hidden bg-white/5">
+          <img
+            src={coverImage}
+            alt={event.title}
+            loading="lazy"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      )}
 
       <div className="p-5 pb-4">
         <div className="flex items-center justify-between mb-4">
