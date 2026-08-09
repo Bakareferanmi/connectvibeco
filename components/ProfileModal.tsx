@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { X as CloseIcon, Upload, Check, Instagram } from "lucide-react";
+import { X as CloseIcon, Upload, Check, Instagram, Check as CheckIcon } from "lucide-react";
 import { XIcon, TikTokIcon } from "@/components/SocialIcons";
 import { useAuth } from "@/lib/auth-context";
 import { useToast } from "@/lib/toast-context";
@@ -61,6 +61,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const [instagram, setInstagram] = useState(user?.instagram ?? "");
   const [twitter, setTwitter] = useState(user?.twitter ?? "");
   const [tiktok, setTiktok] = useState(user?.tiktok ?? "");
+  const [justSaved, setJustSaved] = useState(false);
 
   function toggleInterest(interest: string) {
     setInterests((current) =>
@@ -104,7 +105,10 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
       tiktok: cleanHandle(tiktok) || undefined,
     });
     showToast("Profile updated");
-    onClose();
+    setJustSaved(true);
+    setTimeout(() => {
+      onClose();
+    }, 700);
   }
 
   const previewUser = { ...user, avatarUrl, avatarPreset };
@@ -353,9 +357,17 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full"
+            disabled={justSaved}
+            className="flex-1 flex items-center justify-center gap-1.5 bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full disabled:opacity-90"
           >
-            Save
+            {justSaved ? (
+              <>
+                <CheckIcon className="w-4 h-4" />
+                Saved
+              </>
+            ) : (
+              "Save"
+            )}
           </button>
         </div>
       </div>
