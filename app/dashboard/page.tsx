@@ -1,36 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Calendar, MapPin, Ticket as TicketIcon, Bookmark, ArrowRight, Compass } from "lucide-react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/lib/auth-context";
 import { EVENTS, TRIPS } from "@/lib/data";
-import type { Ticket } from "@/lib/types";
-
-const BOOKINGS_KEY = "connectvibe:bookings";
-const SAVED_KEY = "connectvibe:saved";
-
-function readTickets(): Ticket[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(BOOKINGS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function readSavedIds(): string[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(SAVED_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
 
 const ALL_ITEMS = [
   ...EVENTS.map((e) => ({
@@ -104,15 +79,38 @@ function DashboardSkeleton() {
   );
 }
 
+function DashboardContent({ email }: { email: string }) {
+  const bookingsKey = `connectvibe:bookings:${email}`;
+  const savedKey = `connectvibe:saved:${email}`;
+
+  const tickets = (() => {
+    try {
+      const raw = localStorage.getItem(bookingsKey);
+      return raw ? (JSON.parse(raw) as { itemId: string }[]) : [];
+    } catch {
+      return [];
+    }
+  })();
+
+  const savedIds = (() => {
+    try {
+      const raw = localStorage.getItem(savedKey);
+      return raw ? (JSON.parse(raw) as string[]) : [];
+    } catch {
+      return [];
+    }
+  })();
+
+  const bookedItems = ALL_ITEMS.filter((i) => tickets.some((t) => t.itemId === i.id));
+  const savedItems = ALL_ITEMS.filter((i) => savedIds.includes(i.id));
+  const bookedOrSavedIds = new Set([...bookedItems.map((i) => i.id), ...savedItems.map((i) => i.id)]);
+  const availableItems = ALL_ITEMS.filter((i) => !bookedOrSavedIds.has(i.id)).slice(0, 6);
+
+  return { bookedItems, savedItems, availableItems };
+}
+
 export default function DashboardPage() {
   const { user, loading } = useAuth();
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [savedIds, setSavedIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    setTickets(readTickets());
-    setSavedIds(readSavedIds());
-  }, []);
 
   if (loading) return <DashboardSkeleton />;
 
@@ -134,10 +132,7 @@ export default function DashboardPage() {
     );
   }
 
-  const bookedItems = ALL_ITEMS.filter((i) => tickets.some((t) => t.itemId === i.id));
-  const savedItems = ALL_ITEMS.filter((i) => savedIds.includes(i.id));
-  const bookedOrSavedIds = new Set([...bookedItems.map((i) => i.id), ...savedItems.map((i) => i.id)]);
-  const availableItems = ALL_ITEMS.filter((i) => !bookedOrSavedIds.has(i.id)).slice(0, 6);
+  const { bookedItems, savedItems, availableItems } = DashboardContent({ email: user.email });
   const firstName = user.name.split(" ")[0];
 
   return (
