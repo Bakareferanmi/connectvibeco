@@ -59,7 +59,7 @@ export default function TicketCard({ event }: { event: EventListing }) {
           <span className={`text-[11px] tracking-[0.15em] uppercase font-mono ${a.text}`}>
             {event.category}
           </span>
-          <span className="text-[11px] font-mono text-white/30">#{event.id}</span>
+          <span className="text-[11px] font-mono text-white/50">#{event.id}</span>
         </div>
         <h3 className="font-display font-semibold text-white text-[17px] leading-snug mb-4 pr-8">
           {event.title}

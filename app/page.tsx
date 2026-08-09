@@ -42,7 +42,7 @@ export default function HomePage() {
       <section className="relative max-w-6xl mx-auto px-6 pt-4 pb-20">
         <div className="absolute -top-10 right-0 w-[420px] h-[420px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(217,70,239,0.15) 0%, rgba(139,92,246,0.08) 40%, transparent 70%)" }} />
         <div className="relative">
-          <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-5">487 people going out this week</p>
+          <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-5">487 people going out this week</p>
           <h1 className="font-display text-[44px] sm:text-[64px] font-semibold leading-[1.05] tracking-tight max-w-2xl">
             Find your people.{" "}
             <span className="bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">Show up.</span>
@@ -65,11 +65,11 @@ export default function HomePage() {
               </button>
             ))}
           </div>
-          <button className="text-[13px] text-white/30 font-mono hidden sm:block">scroll to see more</button>
+          <button className="text-[13px] text-white/50 font-mono hidden sm:block">scroll to see more</button>
         </div>
 
         {filteredEvents.length === 0 ? (
-          <p className="text-white/40 text-[14px] py-8">
+          <p className="text-white/50 text-[14px] py-8">
             Nothing in this category right now — check back soon.
           </p>
         ) : (
