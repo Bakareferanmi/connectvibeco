@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Loader2, Check, Minus, Plus, CreditCard } from "lucide-react";
 import TicketReceipt from "@/components/TicketReceipt";
+import { useModalA11y } from "@/lib/useModalA11y";
 import type { Ticket } from "@/lib/types";
 
 interface BookModalProps {
@@ -24,6 +25,7 @@ export default function BookModal({ title, meta, price, maxQty = 4, onClose, onC
   const [qty, setQty] = useState(1);
   const [status, setStatus] = useState<"review" | "processing" | "success">("review");
   const [ticket, setTicket] = useState<Ticket | null>(null);
+  const containerRef = useModalA11y(onClose, status !== "processing");
   const { symbol, amount } = parsePrice(price);
   const fee = Math.max(1, Math.round(amount * 0.05));
   const subtotal = amount * qty;
@@ -45,7 +47,14 @@ export default function BookModal({ title, meta, price, maxQty = 4, onClose, onC
         onClick={status === "review" ? onClose : undefined}
       />
 
-      <div className="relative w-full max-w-sm rounded-2xl bg-panel border border-white/10 p-6 max-h-[90vh] overflow-y-auto">
+      <div
+        ref={containerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="book-modal-title"
+        tabIndex={-1}
+        className="relative w-full max-w-sm rounded-2xl bg-panel border border-white/10 p-6 max-h-[90vh] overflow-y-auto focus:outline-none"
+      >
         {status !== "processing" && (
           <button
             onClick={onClose}
@@ -61,7 +70,7 @@ export default function BookModal({ title, meta, price, maxQty = 4, onClose, onC
             <div className="w-14 h-14 rounded-full bg-emerald-500/15 flex items-center justify-center mb-4">
               <Check className="w-7 h-7 text-emerald-400" />
             </div>
-            <h2 className="font-display text-[20px] font-semibold tracking-tight mb-1">You're booked</h2>
+            <h2 id="book-modal-title" className="font-display text-[20px] font-semibold tracking-tight mb-1">You're booked</h2>
             <p className="text-white/60 text-[13px] mb-6">
               {ticket.qty} {ticket.qty === 1 ? "spot" : "spots"} for {ticket.title}
             </p>
@@ -79,7 +88,7 @@ export default function BookModal({ title, meta, price, maxQty = 4, onClose, onC
           </div>
         ) : (
           <>
-            <h2 className="font-display text-[20px] font-semibold tracking-tight mb-1 pr-6">Confirm booking</h2>
+            <h2 id="book-modal-title" className="font-display text-[20px] font-semibold tracking-tight mb-1 pr-6">Confirm booking</h2>
             <p className="text-white/50 text-[13px] mb-6">
               {title} · {meta}
             </p>
