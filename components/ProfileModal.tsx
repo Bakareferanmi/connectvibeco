@@ -128,7 +128,14 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
             <Upload className="w-3.5 h-3.5" />
             Upload photo
           </button>
-          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+            aria-label="Upload profile photo"
+          />
           {avatarUrl && (
             <button
               onClick={() => setAvatarUrl("")}
@@ -139,33 +146,37 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
           )}
         </div>
 
-        <div className="mb-8">
-          <p className="text-[13px] text-white/50 mb-3">Or choose an avatar</p>
+        <div className="mb-8" role="group" aria-labelledby="avatar-preset-label">
+          <p id="avatar-preset-label" className="text-[13px] text-white/50 mb-3">Or choose an avatar</p>
           <div className="flex flex-wrap gap-3">
-            {AVATAR_PRESETS.map((preset) => (
-              <button
-                key={preset.id}
-                onClick={() => handlePresetPick(preset.id)}
-                className={`w-10 h-10 rounded-full ${preset.classes} flex items-center justify-center text-white transition-transform ${
-                  !avatarUrl && avatarPreset === preset.id
-                    ? "ring-2 ring-white ring-offset-2 ring-offset-panel scale-105"
-                    : ""
-                }`}
-              >
-                {!avatarUrl && avatarPreset === preset.id && <Check className="w-4 h-4" />}
-              </button>
-            ))}
+            {AVATAR_PRESETS.map((preset) => {
+              const isSelected = !avatarUrl && avatarPreset === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  onClick={() => handlePresetPick(preset.id)}
+                  aria-pressed={isSelected}
+                  aria-label={`${preset.id} avatar`}
+                  className={`w-10 h-10 rounded-full ${preset.classes} flex items-center justify-center text-white transition-transform ${
+                    isSelected ? "ring-2 ring-white ring-offset-2 ring-offset-panel scale-105" : ""
+                  }`}
+                >
+                  {isSelected && <Check className="w-4 h-4" />}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[13px] text-white/50">Bio</p>
+            <label htmlFor="bio" className="text-[13px] text-white/50">Bio</label>
             <span className="text-[11px] font-mono text-white/30">
               {bio.length}/{BIO_MAX_LENGTH}
             </span>
           </div>
           <textarea
+            id="bio"
             value={bio}
             onChange={(e) => setBio(e.target.value.slice(0, BIO_MAX_LENGTH))}
             placeholder="Tell people a bit about yourself"
@@ -176,8 +187,9 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
 
         <div className="grid grid-cols-2 gap-4 mb-8">
           <div>
-            <p className="text-[13px] text-white/50 mb-3">Age</p>
+            <label htmlFor="age" className="block text-[13px] text-white/50 mb-3">Age</label>
             <input
+              id="age"
               type="number"
               min={1}
               max={120}
@@ -188,8 +200,9 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
             />
           </div>
           <div>
-            <p className="text-[13px] text-white/50 mb-3">City</p>
+            <label htmlFor="city" className="block text-[13px] text-white/50 mb-3">City</label>
             <input
+              id="city"
               type="text"
               value={city}
               onChange={(e) => setCity(e.target.value)}
@@ -203,8 +216,10 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
           <p className="text-[13px] text-white/50 mb-3">Socials</p>
           <div className="space-y-3">
             <div className="flex items-center gap-2 bg-ink border border-white/10 rounded-xl px-4 py-2.5 focus-within:border-fuchsia-500/50">
-              <Instagram className="w-4 h-4 text-white/30 flex-shrink-0" />
+              <Instagram className="w-4 h-4 text-white/30 flex-shrink-0" aria-hidden="true" />
+              <label htmlFor="instagram" className="sr-only">Instagram handle</label>
               <input
+                id="instagram"
                 type="text"
                 value={instagram}
                 onChange={(e) => setInstagram(e.target.value)}
@@ -213,8 +228,10 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
               />
             </div>
             <div className="flex items-center gap-2 bg-ink border border-white/10 rounded-xl px-4 py-2.5 focus-within:border-fuchsia-500/50">
-              <XIcon className="w-3.5 h-3.5 text-white/30 flex-shrink-0" />
+              <XIcon className="w-3.5 h-3.5 text-white/30 flex-shrink-0" aria-hidden="true" />
+              <label htmlFor="twitter" className="sr-only">X handle</label>
               <input
+                id="twitter"
                 type="text"
                 value={twitter}
                 onChange={(e) => setTwitter(e.target.value)}
@@ -223,8 +240,10 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
               />
             </div>
             <div className="flex items-center gap-2 bg-ink border border-white/10 rounded-xl px-4 py-2.5 focus-within:border-fuchsia-500/50">
-              <TikTokIcon className="w-4 h-4 text-white/30 flex-shrink-0" />
+              <TikTokIcon className="w-4 h-4 text-white/30 flex-shrink-0" aria-hidden="true" />
+              <label htmlFor="tiktok" className="sr-only">TikTok handle</label>
               <input
+                id="tiktok"
                 type="text"
                 value={tiktok}
                 onChange={(e) => setTiktok(e.target.value)}
@@ -235,32 +254,37 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
-        <div className="mb-8">
-          <p className="text-[13px] text-white/50 mb-3">Interests</p>
+        <div className="mb-8" role="group" aria-labelledby="interests-label">
+          <p id="interests-label" className="text-[13px] text-white/50 mb-3">Interests</p>
           <div className="flex flex-wrap gap-2">
-            {INTEREST_OPTIONS.map((interest) => (
-              <button
-                key={interest}
-                onClick={() => toggleInterest(interest)}
-                className={`text-[13px] px-4 py-1.5 rounded-full transition-colors ${
-                  interests.includes(interest)
-                    ? "bg-white text-black font-medium"
-                    : "bg-white/5 text-white/50 hover:text-white/80"
-                }`}
-              >
-                {interest}
-              </button>
-            ))}
+            {INTEREST_OPTIONS.map((interest) => {
+              const isSelected = interests.includes(interest);
+              return (
+                <button
+                  key={interest}
+                  onClick={() => toggleInterest(interest)}
+                  aria-pressed={isSelected}
+                  className={`text-[13px] px-4 py-1.5 rounded-full transition-colors ${
+                    isSelected
+                      ? "bg-white text-black font-medium"
+                      : "bg-white/5 text-white/50 hover:text-white/80"
+                  }`}
+                >
+                  {interest}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="mb-8">
-          <p className="text-[13px] text-white/50 mb-3">Pronouns</p>
+        <div className="mb-8" role="group" aria-labelledby="pronouns-label">
+          <p id="pronouns-label" className="text-[13px] text-white/50 mb-3">Pronouns</p>
           <div className="flex flex-wrap gap-2 mb-3">
             {PRONOUN_OPTIONS.map((p) => (
               <button
                 key={p}
                 onClick={() => setPronouns(p)}
+                aria-pressed={pronouns === p}
                 className={`text-[13px] px-4 py-1.5 rounded-full transition-colors ${
                   pronouns === p ? "bg-white text-black font-medium" : "bg-white/5 text-white/50 hover:text-white/80"
                 }`}
@@ -270,6 +294,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
             ))}
             <button
               onClick={() => setPronouns("custom")}
+              aria-pressed={pronouns === "custom"}
               className={`text-[13px] px-4 py-1.5 rounded-full transition-colors ${
                 pronouns === "custom" ? "bg-white text-black font-medium" : "bg-white/5 text-white/50 hover:text-white/80"
               }`}
@@ -278,23 +303,28 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
             </button>
           </div>
           {pronouns === "custom" && (
-            <input
-              type="text"
-              value={customPronouns}
-              onChange={(e) => setCustomPronouns(e.target.value)}
-              placeholder="Enter your pronouns"
-              className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
-            />
+            <>
+              <label htmlFor="customPronouns" className="sr-only">Custom pronouns</label>
+              <input
+                id="customPronouns"
+                type="text"
+                value={customPronouns}
+                onChange={(e) => setCustomPronouns(e.target.value)}
+                placeholder="Enter your pronouns"
+                className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
+              />
+            </>
           )}
         </div>
 
-        <div className="mb-8">
-          <p className="text-[13px] text-white/50 mb-3">Sexual orientation</p>
+        <div className="mb-8" role="group" aria-labelledby="orientation-label">
+          <p id="orientation-label" className="text-[13px] text-white/50 mb-3">Sexual orientation</p>
           <div className="flex flex-wrap gap-2">
             {ORIENTATION_OPTIONS.map((o) => (
               <button
                 key={o}
                 onClick={() => setOrientation(o)}
+                aria-pressed={orientation === o}
                 className={`text-[13px] px-4 py-1.5 rounded-full transition-colors ${
                   orientation === o ? "bg-white text-black font-medium" : "bg-white/5 text-white/50 hover:text-white/80"
                 }`}
