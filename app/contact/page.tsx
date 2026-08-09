@@ -54,7 +54,7 @@ export default function ContactPage() {
         </div>
 
         {sent ? (
-          <div className="rounded-2xl bg-panel border border-white/10 p-8 text-center">
+          <div className="rounded-2xl bg-panel border border-white/10 p-8 text-center" role="status">
             <p className="font-display text-[18px] font-semibold mb-2">
               Message sent
             </p>
@@ -65,8 +65,9 @@ export default function ContactPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[13px] text-white/50 mb-2">Name</label>
+              <label htmlFor="contact-name" className="block text-[13px] text-white/50 mb-2">Name</label>
               <input
+                id="contact-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -75,8 +76,9 @@ export default function ContactPage() {
               />
             </div>
             <div>
-              <label className="block text-[13px] text-white/50 mb-2">Email</label>
+              <label htmlFor="contact-email" className="block text-[13px] text-white/50 mb-2">Email</label>
               <input
+                id="contact-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -85,8 +87,9 @@ export default function ContactPage() {
               />
             </div>
             <div>
-              <label className="block text-[13px] text-white/50 mb-2">Message</label>
+              <label htmlFor="contact-message" className="block text-[13px] text-white/50 mb-2">Message</label>
               <textarea
+                id="contact-message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="How can we help?"
