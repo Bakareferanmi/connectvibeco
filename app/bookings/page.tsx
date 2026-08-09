@@ -8,20 +8,24 @@ import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import { EVENTS, TRIPS } from "@/lib/data";
 import type { Ticket } from "@/lib/types";
-
-const STORAGE_KEY = "connectvibe:bookings";
+import { useAuth } from "@/lib/auth-context";
 
 export default function BookingsPage() {
+  const { user } = useAuth();
   const [tickets, setTickets] = useState<Ticket[]>([]);
 
   useEffect(() => {
+    if (!user) {
+      setTickets([]);
+      return;
+    }
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(`connectvibe:bookings:${user.email}`);
       setTickets(raw ? JSON.parse(raw) : []);
     } catch {
       setTickets([]);
     }
-  }, []);
+  }, [user]);
 
   const bookedEvents = EVENTS
     .map((e) => ({ event: e, ticket: tickets.find((t) => t.itemId === e.id) }))

@@ -8,20 +8,24 @@ import TripCard from "@/components/TripCard";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import { EVENTS, TRIPS } from "@/lib/data";
-
-const STORAGE_KEY = "connectvibe:saved";
+import { useAuth } from "@/lib/auth-context";
 
 export default function SavedPage() {
+  const { user } = useAuth();
   const [savedIds, setSavedIds] = useState<string[]>([]);
 
   useEffect(() => {
+    if (!user) {
+      setSavedIds([]);
+      return;
+    }
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(`connectvibe:saved:${user.email}`);
       setSavedIds(raw ? JSON.parse(raw) : []);
     } catch {
       setSavedIds([]);
     }
-  }, []);
+  }, [user]);
 
   const savedEvents = EVENTS.filter((e) => savedIds.includes(e.id));
   const savedTrips = TRIPS.filter((t) => savedIds.includes(t.id));
