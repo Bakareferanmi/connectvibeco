@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const STORAGE_KEY = "connectvibe:membership";
+import { useAuth } from "@/lib/auth-context";
 
 export interface Membership {
   tierId: string;
@@ -13,18 +12,26 @@ export interface Membership {
   memberNumber: string;
 }
 
-function readMembership(): Membership | null {
+function storageKey(email?: string) {
+  return `connectvibe:membership:${email ?? "guest"}`;
+}
+
+function readMembership(key: string): Membership | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
 }
 
-function writeMembership(m: Membership) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(m));
+function writeMembership(key: string, m: Membership) {
+  try {
+    localStorage.setItem(key, JSON.stringify(m));
+  } catch {
+    // storage unavailable - ignore
+  }
 }
 
 function generateMemberNumber(): string {
@@ -37,11 +44,13 @@ function generateMemberNumber(): string {
 }
 
 export function useMembership() {
+  const { user } = useAuth();
+  const key = storageKey(user?.email);
   const [membership, setMembership] = useState<Membership | null>(null);
 
   useEffect(() => {
-    setMembership(readMembership());
-  }, []);
+    setMembership(readMembership(key));
+  }, [key]);
 
   function join(tierId: string, tierName: string, price: string, period: string): Membership {
     const record: Membership = {
@@ -52,7 +61,7 @@ export function useMembership() {
       joinedAt: new Date().toISOString(),
       memberNumber: generateMemberNumber(),
     };
-    writeMembership(record);
+    writeMembership(key, record);
     setMembership(record);
     return record;
   }

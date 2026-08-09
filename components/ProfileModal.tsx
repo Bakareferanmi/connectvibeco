@@ -90,7 +90,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
 
   function handleSave() {
     const finalPronouns = pronouns === "custom" ? customPronouns.trim() : pronouns;
-    const parsedAge = parseInt(age, 10);
+    const parsedAge = Math.min(120, Math.max(1, parseInt(age, 10)));
     updateProfile({
       avatarUrl: avatarUrl || undefined,
       avatarPreset: avatarUrl ? undefined : avatarPreset,

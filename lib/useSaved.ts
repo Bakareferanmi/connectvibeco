@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 
-const STORAGE_KEY = "connectvibe:saved";
+function storageKey(email?: string) {
+  return `connectvibe:saved:${email ?? "guest"}`;
+}
 
-function readSaved(): string[] {
+function readSaved(key: string): string[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -15,20 +18,26 @@ function readSaved(): string[] {
 }
 
 export function useSaved(id: string) {
+  const { user } = useAuth();
+  const key = storageKey(user?.email);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    setSaved(readSaved().includes(id));
-  }, [id]);
+    setSaved(readSaved(key).includes(id));
+  }, [id, key]);
 
   function toggle(e?: React.MouseEvent) {
     e?.preventDefault();
     e?.stopPropagation();
-    const current = readSaved();
+    const current = readSaved(key);
     const next = current.includes(id)
       ? current.filter((x) => x !== id)
       : [...current, id];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    try {
+      localStorage.setItem(key, JSON.stringify(next));
+    } catch {
+      // storage unavailable (e.g. private browsing quota) - ignore
+    }
     setSaved(next.includes(id));
   }
 

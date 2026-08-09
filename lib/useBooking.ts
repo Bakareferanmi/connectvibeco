@@ -2,21 +2,28 @@
 
 import { useEffect, useState } from "react";
 import type { Ticket } from "@/lib/types";
+import { useAuth } from "@/lib/auth-context";
 
-const STORAGE_KEY = "connectvibe:bookings";
+function storageKey(email?: string) {
+  return `connectvibe:bookings:${email ?? "guest"}`;
+}
 
-function readTickets(): Ticket[] {
+function readTickets(key: string): Ticket[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
   }
 }
 
-function writeTickets(tickets: Ticket[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
+function writeTickets(key: string, tickets: Ticket[]) {
+  try {
+    localStorage.setItem(key, JSON.stringify(tickets));
+  } catch {
+    // storage unavailable - ignore
+  }
 }
 
 function makeCode(): string {
@@ -54,15 +61,17 @@ interface BookDetails {
 }
 
 export function useBooking(itemId: string) {
+  const { user } = useAuth();
+  const key = storageKey(user?.email);
   const [ticket, setTicket] = useState<Ticket | null>(null);
 
   useEffect(() => {
-    const existing = readTickets().find((t) => t.itemId === itemId);
+    const existing = readTickets(key).find((t) => t.itemId === itemId);
     setTicket(existing ?? null);
-  }, [itemId]);
+  }, [itemId, key]);
 
   function book(details: BookDetails): Ticket {
-    const existing = readTickets();
+    const existing = readTickets(key);
     const already = existing.find((t) => t.itemId === itemId);
     if (already) {
       setTicket(already);
@@ -77,7 +86,7 @@ export function useBooking(itemId: string) {
       qty: details.qty,
       purchasedAt: new Date().toISOString(),
     };
-    writeTickets([...existing, newTicket]);
+    writeTickets(key, [...existing, newTicket]);
     setTicket(newTicket);
     return newTicket;
   }
