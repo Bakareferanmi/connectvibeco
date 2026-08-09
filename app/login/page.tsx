@@ -10,7 +10,7 @@ type Mode = "login" | "signup";
 
 function GoogleIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="w-4 h-4">
+    <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden="true">
       <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47a5.6 5.6 0 0 1-2.4 3.65v3h3.86c2.26-2.09 3.56-5.17 3.56-8.89z" />
       <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.84l-3.86-3c-1.07.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.29v3.11A12 12 0 0 0 12 24z" />
       <path fill="#FBBC05" d="M5.27 14.35a7.2 7.2 0 0 1 0-4.7V6.54H1.29a12 12 0 0 0 0 10.92l3.98-3.11z" />
@@ -98,6 +98,7 @@ function AuthForm() {
         <div className="flex items-center gap-1 bg-white/5 rounded-full p-1 w-fit mb-8">
           <button
             onClick={() => switchMode("login")}
+            aria-pressed={mode === "login"}
             className={`text-[13px] px-4 py-1.5 rounded-full transition-colors ${
               mode === "login" ? "bg-white text-black font-medium" : "text-white/50"
             }`}
@@ -106,6 +107,7 @@ function AuthForm() {
           </button>
           <button
             onClick={() => switchMode("signup")}
+            aria-pressed={mode === "signup"}
             className={`text-[13px] px-4 py-1.5 rounded-full transition-colors ${
               mode === "signup" ? "bg-white text-black font-medium" : "text-white/50"
             }`}
@@ -131,8 +133,9 @@ function AuthForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === "signup" && (
             <div>
-              <label className="block text-[13px] text-white/50 mb-1.5">Name</label>
+              <label htmlFor="name" className="block text-[13px] text-white/50 mb-1.5">Name</label>
               <input
+                id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -142,8 +145,9 @@ function AuthForm() {
             </div>
           )}
           <div>
-            <label className="block text-[13px] text-white/50 mb-1.5">Email</label>
+            <label htmlFor="email" className="block text-[13px] text-white/50 mb-1.5">Email</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -152,9 +156,10 @@ function AuthForm() {
             />
           </div>
           <div>
-            <label className="block text-[13px] text-white/50 mb-1.5">Password</label>
+            <label htmlFor="password" className="block text-[13px] text-white/50 mb-1.5">Password</label>
             <div className="relative">
               <input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -174,9 +179,10 @@ function AuthForm() {
 
           {mode === "signup" && (
             <div>
-              <label className="block text-[13px] text-white/50 mb-1.5">Confirm password</label>
+              <label htmlFor="confirmPassword" className="block text-[13px] text-white/50 mb-1.5">Confirm password</label>
               <div className="relative">
                 <input
+                  id="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -195,7 +201,11 @@ function AuthForm() {
             </div>
           )}
 
-          {error && <p className="text-[13px] text-fuchsia-400">{error}</p>}
+          {error && (
+            <p role="alert" className="text-[13px] text-fuchsia-400">
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"
