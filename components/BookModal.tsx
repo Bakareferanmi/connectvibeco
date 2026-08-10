@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { X, Loader2, Check, Minus, Plus, CreditCard } from "lucide-react";
+import { X, Loader2, Check, Minus, Plus, CreditCard, Lock } from "lucide-react";
 import TicketReceipt from "@/components/TicketReceipt";
 import { useModalA11y } from "@/lib/useModalA11y";
+import { formatCardNumber, formatExpiry, formatCVC, isCardComplete } from "@/lib/cardInput";
 import type { Ticket } from "@/lib/types";
 
 interface BookModalProps {
@@ -27,13 +28,19 @@ export default function BookModal({ title, meta, price, maxQty = 4, location, im
   const [qty, setQty] = useState(1);
   const [status, setStatus] = useState<"review" | "processing" | "success">("review");
   const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvc, setCvc] = useState("");
+  const [cardName, setCardName] = useState("");
   const containerRef = useModalA11y(onClose, status !== "processing");
   const { symbol, amount } = parsePrice(price);
   const fee = Math.max(1, Math.round(amount * 0.05));
   const subtotal = amount * qty;
   const total = subtotal + fee;
+  const cardComplete = isCardComplete(cardNumber, expiry, cvc, cardName);
 
   function handleConfirm() {
+    if (!cardComplete) return;
     setStatus("processing");
     setTimeout(() => {
       const created = onConfirm(qty);
@@ -142,15 +149,83 @@ export default function BookModal({ title, meta, price, maxQty = 4, location, im
               </span>
             </div>
 
-            <div className="flex items-center gap-2 text-[13px] text-white/50 mb-6">
-              <CreditCard className="w-4 h-4" />
-              Card ending in 4242
+            <div className="mb-6">
+              <p className="text-[13px] text-white/50 mb-3 flex items-center gap-1.5">
+                <CreditCard className="w-4 h-4" />
+                Card details
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <label htmlFor="cardNumber" className="sr-only">Card number</label>
+                  <input
+                    id="cardNumber"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="cc-number"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                    placeholder="4242 4242 4242 4242"
+                    maxLength={19}
+                    disabled={status === "processing"}
+                    className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] font-mono text-white placeholder-white/25 focus:outline-none focus:border-fuchsia-500/50 disabled:opacity-60"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label htmlFor="expiry" className="sr-only">Expiry</label>
+                    <input
+                      id="expiry"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="cc-exp"
+                      value={expiry}
+                      onChange={(e) => setExpiry(formatExpiry(e.target.value))}
+                      placeholder="MM/YY"
+                      maxLength={5}
+                      disabled={status === "processing"}
+                      className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] font-mono text-white placeholder-white/25 focus:outline-none focus:border-fuchsia-500/50 disabled:opacity-60"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="cvc" className="sr-only">CVC</label>
+                    <input
+                      id="cvc"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="cc-csc"
+                      value={cvc}
+                      onChange={(e) => setCvc(formatCVC(e.target.value))}
+                      placeholder="CVC"
+                      maxLength={4}
+                      disabled={status === "processing"}
+                      className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] font-mono text-white placeholder-white/25 focus:outline-none focus:border-fuchsia-500/50 disabled:opacity-60"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="cardName" className="sr-only">Name on card</label>
+                  <input
+                    id="cardName"
+                    type="text"
+                    autoComplete="cc-name"
+                    value={cardName}
+                    onChange={(e) => setCardName(e.target.value)}
+                    placeholder="Name on card"
+                    disabled={status === "processing"}
+                    className="w-full bg-ink border border-white/10 rounded-xl px-4 py-2.5 text-[14px] text-white placeholder-white/25 focus:outline-none focus:border-fuchsia-500/50 disabled:opacity-60"
+                  />
+                </div>
+              </div>
+              <p className="flex items-center gap-1.5 text-[11px] text-white/30 mt-3">
+                <Lock className="w-3 h-3" />
+                This is a demo — no real charge is made.
+              </p>
             </div>
 
             <button
               onClick={handleConfirm}
-              disabled={status === "processing"}
-              className="w-full flex items-center justify-center gap-2 bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors disabled:opacity-70"
+              disabled={status === "processing" || !cardComplete}
+              className="w-full flex items-center justify-center gap-2 bg-white text-black text-[14px] font-medium px-6 py-3 rounded-full hover:bg-white/90 transition-colors disabled:opacity-50"
             >
               {status === "processing" ? (
                 <>
