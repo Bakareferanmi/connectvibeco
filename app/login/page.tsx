@@ -99,6 +99,11 @@ function AuthForm() {
             Sign in to save this.
           </p>
         )}
+        {reason === "membership" && (
+          <p className="text-[13px] text-white/60 bg-white/5 border border-white/10 rounded-xl px-4 py-3 mb-6">
+            Sign in to join membership.
+          </p>
+        )}
 
         <div className="flex items-center gap-1 bg-white/5 rounded-full p-1 w-fit mb-8">
           <button

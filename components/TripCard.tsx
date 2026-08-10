@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { Calendar, MapPin, Users, Heart, Flame } from "lucide-react";
 import type { TripListing, Accent } from "@/lib/types";
+import { useAuth } from "@/lib/auth-context";
 import { useSaved } from "@/lib/useSaved";
 import { useToast } from "@/lib/toast-context";
 import AttendeeStack from "@/components/AttendeeStack";
@@ -17,12 +19,22 @@ const LOW_SPOTS_THRESHOLD = 3;
 
 export default function TripCard({ trip }: { trip: TripListing }) {
   const a = ACCENTS[trip.accent];
+  const { user } = useAuth();
   const { saved, toggle } = useSaved(trip.id);
   const { showToast } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
   const isFillingFast = trip.spots <= LOW_SPOTS_THRESHOLD;
   const coverImage = trip.images?.[0];
 
   function handleToggle(e: React.MouseEvent) {
+    if (!user) {
+      e.preventDefault();
+      e.stopPropagation();
+      showToast("Sign in to save this");
+      router.push(`/login?reason=saving&redirect=${encodeURIComponent(pathname)}`);
+      return;
+    }
     const willBeSaved = !saved;
     toggle(e);
     showToast(willBeSaved ? "Saved to your list" : "Removed from saved");
