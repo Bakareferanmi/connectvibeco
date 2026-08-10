@@ -11,6 +11,8 @@ interface BookModalProps {
   meta: string;
   price: string;
   maxQty?: number;
+  location?: string;
+  image?: string;
   onClose: () => void;
   onConfirm: (qty: number) => Ticket;
 }
@@ -21,7 +23,7 @@ function parsePrice(price: string) {
   return { symbol: match[1], amount: parseFloat(match[2]) };
 }
 
-export default function BookModal({ title, meta, price, maxQty = 4, onClose, onConfirm }: BookModalProps) {
+export default function BookModal({ title, meta, price, maxQty = 4, location, image, onClose, onConfirm }: BookModalProps) {
   const [qty, setQty] = useState(1);
   const [status, setStatus] = useState<"review" | "processing" | "success">("review");
   const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -76,7 +78,7 @@ export default function BookModal({ title, meta, price, maxQty = 4, onClose, onC
             </p>
 
             <div className="w-full mb-2">
-              <TicketReceipt ticket={ticket} />
+              <TicketReceipt ticket={ticket} location={location} image={image} />
             </div>
 
             <button

@@ -99,6 +99,8 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
               price={event.price}
               maxQty={event.spots}
               label="Book spot"
+              location={event.location}
+              image={event.images?.[0]}
             />
           </div>
           <SaveButton id={event.id} label="Save for later" />

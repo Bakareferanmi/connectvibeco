@@ -15,9 +15,11 @@ interface BookButtonProps {
   price: string;
   maxQty?: number;
   label?: string;
+  location?: string;
+  image?: string;
 }
 
-export default function BookButton({ id, title, meta, price, maxQty, label = "Book spot" }: BookButtonProps) {
+export default function BookButton({ id, title, meta, price, maxQty, label = "Book spot", location, image }: BookButtonProps) {
   const { user } = useAuth();
   const { booked, book } = useBooking(id);
   const { showToast } = useToast();
@@ -54,6 +56,8 @@ export default function BookButton({ id, title, meta, price, maxQty, label = "Bo
           meta={meta}
           price={price}
           maxQty={maxQty}
+          location={location}
+          image={image}
           onClose={() => setModalOpen(false)}
           onConfirm={(qty) => book({ title, meta, price, qty })}
         />

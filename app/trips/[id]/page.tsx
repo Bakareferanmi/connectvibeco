@@ -111,6 +111,8 @@ export default function TripDetailPage({ params }: { params: { id: string } }) {
               price={trip.price}
               maxQty={trip.spots}
               label="Reserve your spot"
+              location={trip.location}
+              image={trip.images?.[0]}
             />
           </div>
           <SaveButton id={trip.id} label="Save for later" />
