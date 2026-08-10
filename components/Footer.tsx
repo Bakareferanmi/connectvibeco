@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FaInstagram, FaFacebookF, FaXTwitter, FaPinterestP, FaThreads } from "react-icons/fa6";
+import { FaInstagram, FaFacebookF, FaXTwitter, FaPinterestP, FaThreads, FaTiktok } from "react-icons/fa6";
 
 const COLUMNS = [
   {
@@ -30,6 +30,7 @@ const COLUMNS = [
 const SOCIALS = [
   { label: "Instagram", href: "https://instagram.com/connectvibeco", Icon: FaInstagram },
   { label: "X", href: "https://x.com/connectvibeco", Icon: FaXTwitter },
+  { label: "TikTok", href: "https://tiktok.com/@connectvibeco", Icon: FaTiktok },
   { label: "Facebook", href: "https://facebook.com/connectvibeco", Icon: FaFacebookF },
   { label: "Pinterest", href: "https://pinterest.com/connectvibeco", Icon: FaPinterestP },
   { label: "Threads", href: "https://threads.net/@connectvibeco", Icon: FaThreads },
@@ -74,7 +75,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/10">
           <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
             <p className="text-white/45 text-[13px]">
-              Connect Vibe Co, all rights reserved.
+              © 2026 Connect Vibe Co. All rights reserved.
             </p>
             <p className="text-white/45 text-[13px]">
               Built with ♥️ by{" "}
