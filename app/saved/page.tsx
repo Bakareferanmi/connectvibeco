@@ -7,12 +7,21 @@ import TicketCard from "@/components/TicketCard";
 import TripCard from "@/components/TripCard";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-import { EVENTS, TRIPS } from "@/lib/data";
+import { EVENTS as STATIC_EVENTS, TRIPS as STATIC_TRIPS } from "@/lib/data";
+import { getEvents, getTrips } from "@/lib/adminStore";
+import type { EventListing, TripListing } from "@/lib/types";
 import { useAuth } from "@/lib/auth-context";
 
 export default function SavedPage() {
   const { user } = useAuth();
   const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [events, setEvents] = useState<EventListing[]>(STATIC_EVENTS);
+  const [trips, setTrips] = useState<TripListing[]>(STATIC_TRIPS);
+
+  useEffect(() => {
+    setEvents(getEvents());
+    setTrips(getTrips());
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -27,8 +36,8 @@ export default function SavedPage() {
     }
   }, [user]);
 
-  const savedEvents = EVENTS.filter((e) => savedIds.includes(e.id));
-  const savedTrips = TRIPS.filter((t) => savedIds.includes(t.id));
+  const savedEvents = events.filter((e) => savedIds.includes(e.id));
+  const savedTrips = trips.filter((t) => savedIds.includes(t.id));
   const isEmpty = savedEvents.length === 0 && savedTrips.length === 0;
 
   return (

@@ -134,9 +134,8 @@ export default function AdminPage() {
             </div>
             <p className="text-[12px] text-white/35 leading-relaxed max-w-xl">
               This data is read from this browser&apos;s local storage — there&apos;s no shared database yet, so
-              user, booking, and membership figures only reflect activity that happened on this device. Event and
-              trip edits made here are saved locally too, and the public pages will need to read from this admin
-              store to pick them up.
+              these figures only reflect activity that happened on this device. Event and trip changes made here
+              now show up live across the site (home, listings, search, and detail pages) in this browser.
             </p>
           </div>
         )}

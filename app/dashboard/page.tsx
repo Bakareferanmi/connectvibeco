@@ -5,28 +5,39 @@ import { Calendar, MapPin, Ticket as TicketIcon, Bookmark, ArrowRight, Compass }
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/lib/auth-context";
-import { EVENTS, TRIPS } from "@/lib/data";
+import { getEvents, getTrips } from "@/lib/adminStore";
 
-const ALL_ITEMS = [
-  ...EVENTS.map((e) => ({
-    id: e.id,
-    title: e.title,
-    when: `${e.date} · ${e.time}`,
-    location: e.location,
-    image: e.images?.[0],
-    href: `/events/${e.id}`,
-  })),
-  ...TRIPS.map((t) => ({
-    id: t.id,
-    title: t.title,
-    when: t.dates,
-    location: t.location,
-    image: t.images?.[0],
-    href: `/trips/${t.id}`,
-  })),
-];
+interface DashboardItem {
+  id: string;
+  title: string;
+  when: string;
+  location: string;
+  image?: string;
+  href: string;
+}
 
-function ItemCard({ item }: { item: (typeof ALL_ITEMS)[number] }) {
+function buildAllItems(): DashboardItem[] {
+  return [
+    ...getEvents().map((e) => ({
+      id: e.id,
+      title: e.title,
+      when: `${e.date} · ${e.time}`,
+      location: e.location,
+      image: e.images?.[0],
+      href: `/events/${e.id}`,
+    })),
+    ...getTrips().map((t) => ({
+      id: t.id,
+      title: t.title,
+      when: t.dates,
+      location: t.location,
+      image: t.images?.[0],
+      href: `/trips/${t.id}`,
+    })),
+  ];
+}
+
+function ItemCard({ item }: { item: DashboardItem }) {
   return (
     <Link
       href={item.href}
@@ -101,10 +112,11 @@ function DashboardContent({ email }: { email: string }) {
     }
   })();
 
-  const bookedItems = ALL_ITEMS.filter((i) => tickets.some((t) => t.itemId === i.id));
-  const savedItems = ALL_ITEMS.filter((i) => savedIds.includes(i.id));
+  const allItems = buildAllItems();
+  const bookedItems = allItems.filter((i) => tickets.some((t) => t.itemId === i.id));
+  const savedItems = allItems.filter((i) => savedIds.includes(i.id));
   const bookedOrSavedIds = new Set([...bookedItems.map((i) => i.id), ...savedItems.map((i) => i.id)]);
-  const availableItems = ALL_ITEMS.filter((i) => !bookedOrSavedIds.has(i.id)).slice(0, 6);
+  const availableItems = allItems.filter((i) => !bookedOrSavedIds.has(i.id)).slice(0, 6);
 
   return { bookedItems, savedItems, availableItems };
 }

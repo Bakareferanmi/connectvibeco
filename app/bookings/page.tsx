@@ -6,13 +6,21 @@ import { Ticket as TicketIcon } from "lucide-react";
 import BookingCard from "@/components/BookingCard";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-import { EVENTS, TRIPS } from "@/lib/data";
-import type { Ticket } from "@/lib/types";
+import { EVENTS as STATIC_EVENTS, TRIPS as STATIC_TRIPS } from "@/lib/data";
+import { getEvents, getTrips } from "@/lib/adminStore";
+import type { EventListing, Ticket, TripListing } from "@/lib/types";
 import { useAuth } from "@/lib/auth-context";
 
 export default function BookingsPage() {
   const { user } = useAuth();
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [events, setEvents] = useState<EventListing[]>(STATIC_EVENTS);
+  const [trips, setTrips] = useState<TripListing[]>(STATIC_TRIPS);
+
+  useEffect(() => {
+    setEvents(getEvents());
+    setTrips(getTrips());
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -27,13 +35,13 @@ export default function BookingsPage() {
     }
   }, [user]);
 
-  const bookedEvents = EVENTS
+  const bookedEvents = events
     .map((e) => ({ event: e, ticket: tickets.find((t) => t.itemId === e.id) }))
-    .filter((x): x is { event: (typeof EVENTS)[number]; ticket: Ticket } => !!x.ticket);
+    .filter((x): x is { event: EventListing; ticket: Ticket } => !!x.ticket);
 
-  const bookedTrips = TRIPS
+  const bookedTrips = trips
     .map((t) => ({ trip: t, ticket: tickets.find((tk) => tk.itemId === t.id) }))
-    .filter((x): x is { trip: (typeof TRIPS)[number]; ticket: Ticket } => !!x.ticket);
+    .filter((x): x is { trip: TripListing; ticket: Ticket } => !!x.ticket);
 
   const isEmpty = bookedEvents.length === 0 && bookedTrips.length === 0;
 

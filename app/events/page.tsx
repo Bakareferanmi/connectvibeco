@@ -6,7 +6,9 @@ import TicketCard from "@/components/TicketCard";
 import TicketCardSkeleton from "@/components/TicketCardSkeleton";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-import { EVENTS, CATEGORIES } from "@/lib/data";
+import { EVENTS as STATIC_EVENTS, CATEGORIES } from "@/lib/data";
+import { getEvents } from "@/lib/adminStore";
+import type { EventListing } from "@/lib/types";
 
 const SORT_OPTIONS = ["Date", "Price: low to high", "Price: high to low", "Spots left"] as const;
 type SortOption = (typeof SORT_OPTIONS)[number];
@@ -27,14 +29,16 @@ export default function EventsPage() {
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>("All");
   const [sort, setSort] = useState<SortOption>("Date");
   const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState<EventListing[]>(STATIC_EVENTS);
 
   useEffect(() => {
+    setEvents(getEvents());
     const timer = setTimeout(() => setLoading(false), 500);
     return () => clearTimeout(timer);
   }, []);
 
   const filtered = useMemo(() => {
-    const result = EVENTS.filter((e) => {
+    const result = events.filter((e) => {
       const matchesCategory = category === "All" || e.category === category;
       const matchesQuery =
         query.trim() === "" ||
@@ -59,7 +63,7 @@ export default function EventsPage() {
         break;
     }
     return sorted;
-  }, [query, category, sort]);
+  }, [query, category, sort, events]);
 
   return (
     <div className="min-h-screen bg-ink">

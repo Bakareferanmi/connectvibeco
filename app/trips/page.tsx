@@ -5,12 +5,16 @@ import TripCard from "@/components/TripCard";
 import TripCardSkeleton from "@/components/TripCardSkeleton";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-import { TRIPS } from "@/lib/data";
+import { TRIPS as STATIC_TRIPS } from "@/lib/data";
+import { getTrips } from "@/lib/adminStore";
+import type { TripListing } from "@/lib/types";
 
 export default function TripsPage() {
   const [loading, setLoading] = useState(true);
+  const [trips, setTrips] = useState<TripListing[]>(STATIC_TRIPS);
 
   useEffect(() => {
+    setTrips(getTrips());
     const timer = setTimeout(() => setLoading(false), 500);
     return () => clearTimeout(timer);
   }, []);
@@ -21,7 +25,7 @@ export default function TripsPage() {
 
       <section className="max-w-6xl mx-auto px-6 pt-10 pb-10">
         <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-3">
-          {TRIPS.length} trips open for booking
+          {trips.length} trips open for booking
         </p>
         <h1 className="font-display text-[36px] sm:text-[48px] font-semibold tracking-tight mb-4 max-w-xl">
           Weekend trips worth planning around
@@ -41,7 +45,7 @@ export default function TripsPage() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 gap-5">
-            {TRIPS.map((trip) => (
+            {trips.map((trip) => (
               <TripCard key={trip.id} trip={trip} />
             ))}
           </div>

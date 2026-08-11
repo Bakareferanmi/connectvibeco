@@ -1,36 +1,45 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import TicketCard from "@/components/TicketCard";
 import TripCard from "@/components/TripCard";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-import { EVENTS, TRIPS } from "@/lib/data";
+import { EVENTS as STATIC_EVENTS, TRIPS as STATIC_TRIPS } from "@/lib/data";
+import { getEvents, getTrips } from "@/lib/adminStore";
+import type { EventListing, TripListing } from "@/lib/types";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
+  const [events, setEvents] = useState<EventListing[]>(STATIC_EVENTS);
+  const [trips, setTrips] = useState<TripListing[]>(STATIC_TRIPS);
+
+  useEffect(() => {
+    setEvents(getEvents());
+    setTrips(getTrips());
+  }, []);
 
   const matchedEvents = useMemo(() => {
     if (query.trim() === "") return [];
     const q = query.toLowerCase();
-    return EVENTS.filter(
+    return events.filter(
       (e) =>
         e.title.toLowerCase().includes(q) ||
         e.location.toLowerCase().includes(q) ||
         e.category.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [query, events]);
 
   const matchedTrips = useMemo(() => {
     if (query.trim() === "") return [];
     const q = query.toLowerCase();
-    return TRIPS.filter(
+    return trips.filter(
       (t) =>
         t.title.toLowerCase().includes(q) ||
         t.location.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [query, trips]);
 
   const hasQuery = query.trim() !== "";
   const totalResults = matchedEvents.length + matchedTrips.length;

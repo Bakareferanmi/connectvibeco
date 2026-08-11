@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import TicketCard from "@/components/TicketCard";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-import { EVENTS } from "@/lib/data";
+import { EVENTS as STATIC_EVENTS } from "@/lib/data";
+import { getEvents } from "@/lib/adminStore";
+import type { EventListing } from "@/lib/types";
 
 const TABS = ["nearby", "this week", "trips"] as const;
 
@@ -19,21 +21,26 @@ function parseEventDate(dateStr: string): number {
 
 export default function HomePage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("nearby");
+  const [events, setEvents] = useState<EventListing[]>(STATIC_EVENTS);
+
+  useEffect(() => {
+    setEvents(getEvents());
+  }, []);
 
   const filteredEvents = useMemo(() => {
     if (tab === "trips") {
-      return EVENTS.filter((e) => e.category === "Trip");
+      return events.filter((e) => e.category === "Trip");
     }
     if (tab === "this week") {
       const now = Date.now();
       const weekFromNow = now + 7 * 24 * 60 * 60 * 1000;
-      return EVENTS.filter((e) => {
+      return events.filter((e) => {
         const eventTime = parseEventDate(e.date);
         return eventTime >= now && eventTime <= weekFromNow;
       });
     }
-    return EVENTS;
-  }, [tab]);
+    return events;
+  }, [tab, events]);
 
   return (
     <div className="min-h-screen bg-ink overflow-hidden">
