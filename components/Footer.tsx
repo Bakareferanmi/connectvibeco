@@ -1,5 +1,18 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaInstagram, FaFacebookF, FaXTwitter, FaPinterestP, FaThreads, FaTiktok } from "react-icons/fa6";
+import { getSocials, DEFAULT_SOCIALS, type SocialKey } from "@/lib/adminStore";
+
+const ICON_MAP: Record<SocialKey, typeof FaInstagram> = {
+  instagram: FaInstagram,
+  x: FaXTwitter,
+  tiktok: FaTiktok,
+  facebook: FaFacebookF,
+  pinterest: FaPinterestP,
+  threads: FaThreads,
+};
 
 const COLUMNS = [
   {
@@ -27,16 +40,15 @@ const COLUMNS = [
   },
 ];
 
-const SOCIALS = [
-  { label: "Instagram", href: "https://instagram.com/connectvibeco", Icon: FaInstagram },
-  { label: "X", href: "https://x.com/connectvibeco", Icon: FaXTwitter },
-  { label: "TikTok", href: "https://tiktok.com/@connectvibeco", Icon: FaTiktok },
-  { label: "Facebook", href: "https://facebook.com/connectvibeco", Icon: FaFacebookF },
-  { label: "Pinterest", href: "https://pinterest.com/connectvibeco", Icon: FaPinterestP },
-  { label: "Threads", href: "https://threads.net/@connectvibeco", Icon: FaThreads },
-];
-
 export default function Footer() {
+  const [socials, setSocials] = useState(DEFAULT_SOCIALS);
+
+  useEffect(() => {
+    setSocials(getSocials());
+  }, []);
+
+  const visibleSocials = socials.filter((s) => s.enabled && s.href.trim());
+
   return (
     <footer className="border-t border-white/10">
       <div className="max-w-6xl mx-auto px-6 py-16">
@@ -90,18 +102,21 @@ export default function Footer() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {SOCIALS.map(({ label, href, Icon }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={label}
-                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
-              >
-                <Icon className="w-3.5 h-3.5 text-white/60" />
-              </a>
-            ))}
+            {visibleSocials.map((s) => {
+              const Icon = ICON_MAP[s.key];
+              return (
+                <a
+                  key={s.key}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                >
+                  <Icon className="w-3.5 h-3.5 text-white/60" />
+                </a>
+              );
+            })}
           </div>
         </div>
       </div>

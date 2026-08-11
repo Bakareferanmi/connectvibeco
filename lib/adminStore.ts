@@ -7,6 +7,7 @@ const TRIPS_KEY = "connectvibe:admin:trips";
 const USERS_KEY = "cvc_users";
 const BOOKINGS_PREFIX = "connectvibe:bookings:";
 const MEMBERSHIP_PREFIX = "connectvibe:membership:";
+const SOCIALS_KEY = "connectvibe:admin:socials";
 
 function readJSON<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -143,4 +144,32 @@ export function getAllMemberships(): AdminMembershipRow[] {
     }
   }
   return rows.sort((a, b) => (a.joinedAt < b.joinedAt ? 1 : -1));
+}
+
+/* ---------------- Socials ---------------- */
+
+export type SocialKey = "instagram" | "x" | "tiktok" | "facebook" | "pinterest" | "threads";
+
+export interface SocialLink {
+  key: SocialKey;
+  label: string;
+  href: string;
+  enabled: boolean;
+}
+
+export const DEFAULT_SOCIALS: SocialLink[] = [
+  { key: "instagram", label: "Instagram", href: "https://instagram.com/connectvibeco", enabled: true },
+  { key: "x", label: "X", href: "https://x.com/connectvibeco", enabled: true },
+  { key: "tiktok", label: "TikTok", href: "https://tiktok.com/@connectvibeco", enabled: true },
+  { key: "facebook", label: "Facebook", href: "https://facebook.com/connectvibeco", enabled: true },
+  { key: "pinterest", label: "Pinterest", href: "https://pinterest.com/connectvibeco", enabled: true },
+  { key: "threads", label: "Threads", href: "https://threads.net/@connectvibeco", enabled: true },
+];
+
+export function getSocials(): SocialLink[] {
+  return readJSON<SocialLink[]>(SOCIALS_KEY, DEFAULT_SOCIALS);
+}
+
+export function saveSocials(socials: SocialLink[]) {
+  writeJSON(SOCIALS_KEY, socials);
 }
