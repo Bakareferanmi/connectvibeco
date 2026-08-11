@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, DollarSign, Ticket as TicketIcon, TrendingUp, Crown } from "lucide-react";
+import { AlertTriangle, DollarSign, Ticket as TicketIcon, TrendingUp, Crown, Eye, BarChart3, PieChart } from "lucide-react";
 import StatTile from "@/components/admin/StatTile";
 import BarChart from "@/components/admin/BarChart";
+import DonutChart from "@/components/admin/DonutChart";
 import {
   getEvents,
   getTrips,
@@ -12,6 +13,7 @@ import {
   type AdminBookingRow,
   type AdminMembershipRow,
 } from "@/lib/adminStore";
+import { getVisitsByDay, getTotalVisits, type VisitDay } from "@/lib/visits";
 import { computeAnalytics } from "@/lib/analytics";
 import type { EventListing, TripListing } from "@/lib/types";
 
@@ -19,17 +21,24 @@ function formatCurrency(n: number): string {
   return `£${n.toFixed(0)}`;
 }
 
+const CATEGORY_COLORS = ["#d946ef", "#22d3ee", "#a78bfa", "#34d399", "#fb923c", "#f472b6"];
+
 export default function AnalyticsPanel() {
   const [events, setEvents] = useState<EventListing[]>([]);
   const [trips, setTrips] = useState<TripListing[]>([]);
   const [bookings, setBookings] = useState<AdminBookingRow[]>([]);
   const [memberships, setMemberships] = useState<AdminMembershipRow[]>([]);
+  const [visits, setVisits] = useState<VisitDay[]>([]);
+  const [totalVisits, setTotalVisits] = useState(0);
+  const [categoryView, setCategoryView] = useState<"bar" | "donut">("bar");
 
   useEffect(() => {
     setEvents(getEvents());
     setTrips(getTrips());
     setBookings(getAllBookings());
     setMemberships(getAllMemberships());
+    setVisits(getVisitsByDay());
+    setTotalVisits(getTotalVisits());
   }, []);
 
   const analytics = useMemo(
@@ -39,13 +48,20 @@ export default function AnalyticsPanel() {
 
   const maxCategoryCount = Math.max(1, ...analytics.categoryBreakdown.map((c) => c.count));
 
+  const categoryDonutData = analytics.categoryBreakdown.map((c, i) => ({
+    label: c.label,
+    value: c.count,
+    color: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
+  }));
+
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <StatTile label="Total revenue" value={formatCurrency(analytics.totalRevenue)} icon={DollarSign} accent="emerald" />
         <StatTile label="Tickets sold" value={analytics.ticketsSold} icon={TicketIcon} accent="fuchsia" />
         <StatTile label="Avg ticket price" value={formatCurrency(analytics.avgTicketPrice)} icon={TrendingUp} accent="cyan" />
         <StatTile label="Membership revenue" value={formatCurrency(analytics.membershipRevenue)} icon={Crown} accent="violet" />
+        <StatTile label="Site visits" value={totalVisits} icon={Eye} accent="cyan" />
       </div>
 
       <div className="rounded-2xl bg-panel border border-white/10 p-5">
@@ -60,6 +76,20 @@ export default function AnalyticsPanel() {
             formatValue={formatCurrency}
           />
         )}
+      </div>
+
+      <div className="rounded-2xl bg-panel border border-white/10 p-5">
+        <h2 className="font-display text-[15px] font-semibold tracking-tight mb-4">
+          Site visits, last 14 days
+        </h2>
+        {totalVisits === 0 ? (
+          <p className="text-white/40 text-[13px] py-6 text-center">No visits logged yet on this device.</p>
+        ) : (
+          <BarChart data={visits.map((v) => ({ label: v.label, value: v.count }))} />
+        )}
+        <p className="text-[11px] text-white/30 mt-3">
+          Counted once per browser session, so refreshes and page-to-page navigation don&apos;t inflate the number.
+        </p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
@@ -86,10 +116,33 @@ export default function AnalyticsPanel() {
         </div>
 
         <div className="rounded-2xl bg-panel border border-white/10 p-5">
-          <h2 className="font-display text-[15px] font-semibold tracking-tight mb-4">Listings by category</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display text-[15px] font-semibold tracking-tight">Listings by category</h2>
+            <div className="flex items-center gap-1 bg-white/5 rounded-full p-1">
+              <button
+                onClick={() => setCategoryView("bar")}
+                aria-label="Bar view"
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
+                  categoryView === "bar" ? "bg-white text-black" : "text-white/50 hover:text-white/80"
+                }`}
+              >
+                <BarChart3 className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setCategoryView("donut")}
+                aria-label="Donut view"
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
+                  categoryView === "donut" ? "bg-white text-black" : "text-white/50 hover:text-white/80"
+                }`}
+              >
+                <PieChart className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
           {analytics.categoryBreakdown.length === 0 ? (
             <p className="text-white/40 text-[13px] py-4 text-center">No listings yet.</p>
-          ) : (
+          ) : categoryView === "bar" ? (
             <div className="space-y-2.5">
               {analytics.categoryBreakdown.map((c) => (
                 <div key={c.label} className="flex items-center gap-3">
@@ -104,6 +157,8 @@ export default function AnalyticsPanel() {
                 </div>
               ))}
             </div>
+          ) : (
+            <DonutChart data={categoryDonutData} />
           )}
         </div>
       </div>
@@ -126,8 +181,8 @@ export default function AnalyticsPanel() {
       )}
 
       <p className="text-[12px] text-white/35 leading-relaxed max-w-xl">
-        Calculated from this browser&apos;s local storage — bookings and memberships made on other devices
-        aren&apos;t counted.
+        Calculated from this browser&apos;s local storage — bookings, memberships, and visits made on other
+        devices aren&apos;t counted.
       </p>
     </div>
   );

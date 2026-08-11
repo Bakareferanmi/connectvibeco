@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { ToastProvider } from "@/lib/toast-context";
+import VisitTracker from "@/components/VisitTracker";
 
 const SITE_URL = "https://connectvibeco.vercel.app";
 const SITE_NAME = "Connect Vibe Co";
@@ -68,7 +69,10 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans text-white antialiased">
         <AuthProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <VisitTracker />
+            {children}
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>
