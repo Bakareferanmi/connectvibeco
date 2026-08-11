@@ -17,6 +17,7 @@ import StatTile from "@/components/admin/StatTile";
 import ListingFormModal from "@/components/admin/ListingFormModal";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import SettingsPanel from "@/components/admin/SettingsPanel";
+import AnalyticsPanel from "@/components/admin/AnalyticsPanel";
 import {
   getEvents,
   getTrips,
@@ -35,7 +36,7 @@ import {
 } from "@/lib/adminStore";
 import type { EventListing, TripListing } from "@/lib/types";
 
-const TABS = ["Overview", "Events", "Trips", "Users", "Bookings", "Socials"] as const;
+const TABS = ["Overview", "Analytics", "Events", "Trips", "Users", "Bookings", "Socials"] as const;
 type Tab = (typeof TABS)[number];
 
 const ACCENT_DOT: Record<string, string> = {
@@ -140,6 +141,8 @@ export default function AdminPage() {
             </p>
           </div>
         )}
+
+        {tab === "Analytics" && <AnalyticsPanel />}
 
         {tab === "Events" && (
           <div>
