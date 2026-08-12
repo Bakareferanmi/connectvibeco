@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
 import { EVENTS as STATIC_EVENTS } from "@/lib/data";
 import { getEvents } from "@/lib/adminStore";
+import { getHero, DEFAULT_HERO, type HeroContent } from "@/lib/content";
 import type { EventListing } from "@/lib/types";
 
 const TABS = ["nearby", "this week", "trips"] as const;
@@ -22,9 +23,11 @@ function parseEventDate(dateStr: string): number {
 export default function HomePage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("nearby");
   const [events, setEvents] = useState<EventListing[]>(STATIC_EVENTS);
+  const [hero, setHero] = useState<HeroContent>(DEFAULT_HERO);
 
   useEffect(() => {
     setEvents(getEvents());
+    setHero(getHero());
   }, []);
 
   const filteredEvents = useMemo(() => {
@@ -49,16 +52,16 @@ export default function HomePage() {
       <section className="relative max-w-6xl mx-auto px-6 pt-4 pb-20">
         <div className="absolute -top-10 right-0 w-[420px] h-[420px] rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(217,70,239,0.15) 0%, rgba(139,92,246,0.08) 40%, transparent 70%)" }} />
         <div className="relative">
-          <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-5">487 people going out this week</p>
+          <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/50 mb-5">{hero.eyebrow}</p>
           <h1 className="font-display text-[44px] sm:text-[64px] font-semibold leading-[1.05] tracking-tight max-w-2xl">
-            Find your people.{" "}
-            <span className="bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">Show up.</span>
+            {hero.headlineMain}{" "}
+            <span className="bg-gradient-to-r from-fuchsia-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">{hero.headlineAccent}</span>
           </h1>
           <p className="text-white/50 text-[16px] max-w-md mt-5 leading-relaxed">
-            Local meetups, weekend trips, and nights out. Vetted, bookable, and full of strangers worth meeting.
+            {hero.subtext}
           </p>
           <div className="flex items-center gap-3 mt-8">
-            <a href="/events" className="bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full">Browse events</a>
+            <a href={hero.ctaHref} className="bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full">{hero.ctaLabel}</a>
           </div>
         </div>
       </section>

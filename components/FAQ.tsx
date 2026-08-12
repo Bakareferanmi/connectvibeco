@@ -1,43 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
-
-const FAQS = [
-  {
-    question: "How do I book a spot at an event or trip?",
-    answer:
-      "Open any event or trip page and tap Book spot. Pick how many spots you need, confirm payment, and you'll get a ticket with a QR code right away.",
-  },
-  {
-    question: "Where can I find my ticket after booking?",
-    answer:
-      "Your ticket stays on the event or trip page you booked, and every ticket you've ever booked lives on your Bookings page, each with its own QR code and a download button.",
-  },
-  {
-    question: "Can I cancel a booking?",
-    answer:
-      "Cancellations aren't self-service yet. If you need to cancel or change a booking, reach out through the Contact page and we'll sort it out.",
-  },
-  {
-    question: "What do I get with membership?",
-    answer:
-      "Membership unlocks priority access to limited-spot events, discounted pricing on bookings, and free guest passes, with better perks the longer your plan. Check the Membership page for the full breakdown by tier.",
-  },
-  {
-    question: "Is my payment information secure?",
-    answer:
-      "Yes. Payments are processed securely and we never store your full card details.",
-  },
-  {
-    question: "How do I save something for later?",
-    answer:
-      "Tap Save on any event or trip page. Everything you save shows up on your Saved page and on your dashboard.",
-  },
-] as const;
+import { getFaqs, DEFAULT_FAQS, type FaqItem } from "@/lib/content";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [faqs, setFaqs] = useState<FaqItem[]>(DEFAULT_FAQS);
+
+  useEffect(() => {
+    setFaqs(getFaqs());
+  }, []);
+
+  if (faqs.length === 0) return null;
 
   return (
     <section className="max-w-3xl mx-auto px-6 pb-24">
@@ -49,10 +24,10 @@ export default function FAQ() {
       </h2>
 
       <div className="rounded-2xl bg-panel border border-white/10 divide-y divide-white/10">
-        {FAQS.map((faq, i) => {
+        {faqs.map((faq, i) => {
           const isOpen = openIndex === i;
           return (
-            <div key={faq.question}>
+            <div key={faq.id}>
               <button
                 onClick={() => setOpenIndex(isOpen ? null : i)}
                 className="w-full flex items-center justify-between gap-4 text-left px-5 py-4"

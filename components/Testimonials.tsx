@@ -1,28 +1,23 @@
-const TESTIMONIALS = [
-  {
-    quote:
-      "Booked a rooftop night on a whim and left with three new friends and a running club invite.",
-    name: "Dara O.",
-    context: "Member since 2025",
-    accent: "border-fuchsia-500/30",
-  },
-  {
-    quote:
-      "The waiver and payment flow took under a minute. Everything after that was the easy part.",
-    name: "Femi A.",
-    context: "Booked 6 trips",
-    accent: "border-violet-500/30",
-  },
-  {
-    quote:
-      "I moved to a new city and didn't know a single person. Three weeks in, my calendar was full.",
-    name: "Priya S.",
-    context: "Member since 2024",
-    accent: "border-cyan-500/30",
-  },
-];
+"use client";
+
+import { useEffect, useState } from "react";
+import { getTestimonials, DEFAULT_TESTIMONIALS, type TestimonialItem, type TestimonialAccent } from "@/lib/content";
+
+const ACCENT_BORDER: Record<TestimonialAccent, string> = {
+  fuchsia: "border-fuchsia-500/30",
+  violet: "border-violet-500/30",
+  cyan: "border-cyan-500/30",
+};
 
 export default function Testimonials() {
+  const [testimonials, setTestimonials] = useState<TestimonialItem[]>(DEFAULT_TESTIMONIALS);
+
+  useEffect(() => {
+    setTestimonials(getTestimonials());
+  }, []);
+
+  if (testimonials.length === 0) return null;
+
   return (
     <section className="max-w-6xl mx-auto px-6 py-20 border-t border-white/10">
       <p className="font-mono text-[12px] tracking-[0.2em] uppercase text-white/40 mb-3">
@@ -33,10 +28,10 @@ export default function Testimonials() {
       </h2>
 
       <div className="grid sm:grid-cols-3 gap-6">
-        {TESTIMONIALS.map((t) => (
+        {testimonials.map((t) => (
           <div
-            key={t.name}
-            className={`rounded-2xl bg-panel border ${t.accent} p-6 flex flex-col justify-between`}
+            key={t.id}
+            className={`rounded-2xl bg-panel border ${ACCENT_BORDER[t.accent]} p-6 flex flex-col justify-between`}
           >
             <p className="text-white/80 text-[15px] leading-relaxed mb-6">
               {t.quote}
