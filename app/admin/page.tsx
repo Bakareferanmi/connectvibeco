@@ -7,6 +7,7 @@ import {
   Calendar,
   Compass,
   Crown,
+  LogOut,
   Pencil,
   Plus,
   Ticket as TicketIcon,
@@ -19,6 +20,8 @@ import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import SettingsPanel from "@/components/admin/SettingsPanel";
 import AnalyticsPanel from "@/components/admin/AnalyticsPanel";
 import ContentPanel from "@/components/admin/ContentPanel";
+import AdminLogin from "@/components/admin/AdminLogin";
+import { isAdminAuthed, clearAdminAuth } from "@/lib/adminAuth";
 import {
   getEvents,
   getTrips,
@@ -47,6 +50,7 @@ const ACCENT_DOT: Record<string, string> = {
 };
 
 export default function AdminPage() {
+  const [authed, setAuthed] = useState<boolean | null>(null);
   const [tab, setTab] = useState<Tab>("Overview");
   const [events, setEvents] = useState<EventListing[]>([]);
   const [trips, setTrips] = useState<TripListing[]>([]);
@@ -69,8 +73,17 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    refresh();
+    setAuthed(isAdminAuthed());
   }, []);
+
+  useEffect(() => {
+    if (authed) refresh();
+  }, [authed]);
+
+  function handleSignOut() {
+    clearAdminAuth();
+    setAuthed(false);
+  }
 
   const stats = useMemo(
     () => ({
@@ -91,6 +104,14 @@ export default function AdminPage() {
     refresh();
   }
 
+  if (authed === null) {
+    return <div className="min-h-screen bg-ink" />;
+  }
+
+  if (!authed) {
+    return <AdminLogin onSuccess={() => setAuthed(true)} />;
+  }
+
   return (
     <div className="min-h-screen bg-ink text-white font-sans">
       <header className="border-b border-white/10">
@@ -103,9 +124,18 @@ export default function AdminPage() {
               ConnectVibeCo <span className="text-white/40 font-normal">Admin</span>
             </span>
           </div>
-          <Link href="/" className="text-[12px] text-white/50 hover:text-white/80 transition-colors">
-            View site
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-[12px] text-white/50 hover:text-white/80 transition-colors">
+              View site
+            </Link>
+            <button
+              onClick={handleSignOut}
+              className="flex items-center gap-1.5 text-[12px] text-white/50 hover:text-white/80 transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Sign out
+            </button>
+          </div>
         </div>
 
         <nav className="max-w-6xl mx-auto px-5 flex gap-1 overflow-x-auto">
