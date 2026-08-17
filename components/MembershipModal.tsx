@@ -12,12 +12,13 @@ interface MembershipModalProps {
   price: string;
   period: string;
   onClose: () => void;
-  onConfirm: () => Membership;
+  onConfirm: () => Promise<Membership | null>;
 }
 
 export default function MembershipModal({ tierName, price, period, onClose, onConfirm }: MembershipModalProps) {
   const [status, setStatus] = useState<"review" | "processing" | "success">("review");
   const [membership, setMembership] = useState<Membership | null>(null);
+  const [error, setError] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvc, setCvc] = useState("");
@@ -28,8 +29,14 @@ export default function MembershipModal({ tierName, price, period, onClose, onCo
   function handleConfirm() {
     if (!cardComplete) return;
     setStatus("processing");
-    setTimeout(() => {
-      const created = onConfirm();
+    setError("");
+    setTimeout(async () => {
+      const created = await onConfirm();
+      if (!created) {
+        setError("Could not complete membership. Please try again.");
+        setStatus("review");
+        return;
+      }
       setMembership(created);
       setStatus("success");
     }, 1100);
@@ -169,6 +176,12 @@ export default function MembershipModal({ tierName, price, period, onClose, onCo
                 This is a demo — no real charge is made.
               </p>
             </div>
+
+            {error && (
+              <p role="alert" className="text-[13px] text-fuchsia-400 mb-4">
+                {error}
+              </p>
+            )}
 
             <button
               onClick={handleConfirm}

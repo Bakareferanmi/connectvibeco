@@ -98,8 +98,8 @@ export default function MembershipPage() {
     setActiveTier(tier);
   }
 
-  function handleConfirmed() {
-    if (!activeTier) throw new Error("No tier selected");
+  async function handleConfirmed() {
+    if (!activeTier) return null;
     return join(activeTier.id, activeTier.name, activeTier.price, activeTier.period);
   }
 

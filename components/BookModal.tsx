@@ -15,7 +15,7 @@ interface BookModalProps {
   location?: string;
   image?: string;
   onClose: () => void;
-  onConfirm: (qty: number) => Ticket;
+  onConfirm: (qty: number) => Promise<Ticket | null>;
 }
 
 function parsePrice(price: string) {
@@ -28,6 +28,7 @@ export default function BookModal({ title, meta, price, maxQty = 4, location, im
   const [qty, setQty] = useState(1);
   const [status, setStatus] = useState<"review" | "processing" | "success">("review");
   const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [error, setError] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvc, setCvc] = useState("");
@@ -42,8 +43,14 @@ export default function BookModal({ title, meta, price, maxQty = 4, location, im
   function handleConfirm() {
     if (!cardComplete) return;
     setStatus("processing");
-    setTimeout(() => {
-      const created = onConfirm(qty);
+    setError("");
+    setTimeout(async () => {
+      const created = await onConfirm(qty);
+      if (!created) {
+        setError("Could not complete booking. Please try again.");
+        setStatus("review");
+        return;
+      }
       setTicket(created);
       setStatus("success");
     }, 1100);
@@ -221,6 +228,12 @@ export default function BookModal({ title, meta, price, maxQty = 4, location, im
                 This is a demo — no real charge is made.
               </p>
             </div>
+
+            {error && (
+              <p role="alert" className="text-[13px] text-fuchsia-400 mb-4">
+                {error}
+              </p>
+            )}
 
             <button
               onClick={handleConfirm}
