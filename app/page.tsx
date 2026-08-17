@@ -7,8 +7,6 @@ import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-import { EVENTS as STATIC_EVENTS } from "@/lib/data";
-import { getEvents } from "@/lib/adminStore";
 import { getHero, DEFAULT_HERO, type HeroContent } from "@/lib/content";
 import type { EventListing } from "@/lib/types";
 
@@ -22,11 +20,16 @@ function parseEventDate(dateStr: string): number {
 
 export default function HomePage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("nearby");
-  const [events, setEvents] = useState<EventListing[]>(STATIC_EVENTS);
+  const [events, setEvents] = useState<EventListing[]>([]);
   const [hero, setHero] = useState<HeroContent>(DEFAULT_HERO);
 
   useEffect(() => {
-    setEvents(getEvents());
+    fetch("/api/events")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setEvents(data.events);
+      })
+      .catch(() => {});
     setHero(getHero());
   }, []);
 

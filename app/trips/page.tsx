@@ -5,18 +5,20 @@ import TripCard from "@/components/TripCard";
 import TripCardSkeleton from "@/components/TripCardSkeleton";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-import { TRIPS as STATIC_TRIPS } from "@/lib/data";
-import { getTrips } from "@/lib/adminStore";
 import type { TripListing } from "@/lib/types";
 
 export default function TripsPage() {
   const [loading, setLoading] = useState(true);
-  const [trips, setTrips] = useState<TripListing[]>(STATIC_TRIPS);
+  const [trips, setTrips] = useState<TripListing[]>([]);
 
   useEffect(() => {
-    setTrips(getTrips());
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
+    fetch("/api/trips")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setTrips(data.trips);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (
