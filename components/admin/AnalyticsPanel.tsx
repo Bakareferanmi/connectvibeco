@@ -6,8 +6,6 @@ import StatTile from "@/components/admin/StatTile";
 import BarChart from "@/components/admin/BarChart";
 import DonutChart from "@/components/admin/DonutChart";
 import {
-  getEvents,
-  getTrips,
   getAllBookings,
   getAllMemberships,
   type AdminBookingRow,
@@ -33,8 +31,8 @@ export default function AnalyticsPanel() {
   const [categoryView, setCategoryView] = useState<"bar" | "donut">("bar");
 
   useEffect(() => {
-    setEvents(getEvents());
-    setTrips(getTrips());
+    fetch("/api/events").then((r) => r.json()).then((d) => d.ok && setEvents(d.events)).catch(() => {});
+    fetch("/api/trips").then((r) => r.json()).then((d) => d.ok && setTrips(d.trips)).catch(() => {});
     setBookings(getAllBookings());
     setMemberships(getAllMemberships());
     setVisits(getVisitsByDay());

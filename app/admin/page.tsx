@@ -20,24 +20,8 @@ import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import SettingsPanel from "@/components/admin/SettingsPanel";
 import AnalyticsPanel from "@/components/admin/AnalyticsPanel";
 import ContentPanel from "@/components/admin/ContentPanel";
-import AdminLogin from "@/components/admin/AdminLogin";
-import { isAdminAuthed, clearAdminAuth } from "@/lib/adminAuth";
-import {
-  getEvents,
-  getTrips,
-  getUsers,
-  getAllBookings,
-  getAllMemberships,
-  createEvent,
-  updateEvent,
-  deleteEvent,
-  createTrip,
-  updateTrip,
-  deleteTrip,
-  type AdminUserRow,
-  type AdminBookingRow,
-  type AdminMembershipRow,
-} from "@/lib/adminStore";
+import { useAuth } from "@/lib/auth-context";
+import { getAllBookings, getAllMemberships, type AdminBookingRow, type AdminMembershipRow } from "@/lib/adminStore";
 import type { EventListing, TripListing } from "@/lib/types";
 
 const TABS = ["Overview", "Analytics", "Events", "Trips", "Users", "Bookings", "Content", "Socials"] as const;
@@ -49,14 +33,23 @@ const ACCENT_DOT: Record<string, string> = {
   violet: "bg-violet-500",
 };
 
+interface AdminUser {
+  id: number;
+  email: string;
+  name: string | null;
+  via_google: boolean;
+  created_at: string;
+}
+
 export default function AdminPage() {
-  const [authed, setAuthed] = useState<boolean | null>(null);
+  const { user, loading } = useAuth();
   const [tab, setTab] = useState<Tab>("Overview");
   const [events, setEvents] = useState<EventListing[]>([]);
   const [trips, setTrips] = useState<TripListing[]>([]);
-  const [users, setUsers] = useState<AdminUserRow[]>([]);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [bookings, setBookings] = useState<AdminBookingRow[]>([]);
   const [memberships, setMemberships] = useState<AdminMembershipRow[]>([]);
+  const [actionError, setActionError] = useState("");
 
   const [editingEvent, setEditingEvent] = useState<EventListing | "new" | null>(null);
   const [editingTrip, setEditingTrip] = useState<TripListing | "new" | null>(null);
@@ -64,52 +57,136 @@ export default function AdminPage() {
     null
   );
 
-  function refresh() {
-    setEvents(getEvents());
-    setTrips(getTrips());
-    setUsers(getUsers());
+  const isAdmin = !!user?.isAdmin;
+
+  async function refresh() {
+    try {
+      const [eventsRes, tripsRes, usersRes] = await Promise.all([
+        fetch("/api/events").then((r) => r.json()),
+        fetch("/api/trips").then((r) => r.json()),
+        fetch("/api/admin/users", { credentials: "include" }).then((r) => r.json()),
+      ]);
+      if (eventsRes.ok) setEvents(eventsRes.events);
+      if (tripsRes.ok) setTrips(tripsRes.trips);
+      if (usersRes.ok) setAdminUsers(usersRes.users);
+    } catch {
+      setActionError("Could not load admin data.");
+    }
     setBookings(getAllBookings());
     setMemberships(getAllMemberships());
   }
 
   useEffect(() => {
-    setAuthed(isAdminAuthed());
-  }, []);
-
-  useEffect(() => {
-    if (authed) refresh();
-  }, [authed]);
-
-  function handleSignOut() {
-    clearAdminAuth();
-    setAuthed(false);
-  }
+    if (isAdmin) refresh();
+  }, [isAdmin]);
 
   const stats = useMemo(
     () => ({
       events: events.length,
       trips: trips.length,
-      users: users.length,
+      users: adminUsers.length,
       bookings: bookings.length,
       memberships: memberships.length,
     }),
-    [events, trips, users, bookings, memberships]
+    [events, trips, adminUsers, bookings, memberships]
   );
 
-  function handleDeleteConfirmed() {
+  async function handleSaveEvent(draft: Omit<EventListing, "id">) {
+    setActionError("");
+    try {
+      const isNew = editingEvent === "new";
+      const url = isNew ? "/api/events" : `/api/events/${(editingEvent as EventListing).id}`;
+      const res = await fetch(url, {
+        method: isNew ? "POST" : "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(draft),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setActionError(data.error ?? "Could not save event.");
+        return;
+      }
+      setEditingEvent(null);
+      refresh();
+    } catch {
+      setActionError("Network error saving event.");
+    }
+  }
+
+  async function handleSaveTrip(draft: Omit<TripListing, "id">) {
+    setActionError("");
+    try {
+      const isNew = editingTrip === "new";
+      const url = isNew ? "/api/trips" : `/api/trips/${(editingTrip as TripListing).id}`;
+      const res = await fetch(url, {
+        method: isNew ? "POST" : "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(draft),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setActionError(data.error ?? "Could not save trip.");
+        return;
+      }
+      setEditingTrip(null);
+      refresh();
+    } catch {
+      setActionError("Network error saving trip.");
+    }
+  }
+
+  async function handleDeleteConfirmed() {
     if (!deleteTarget) return;
-    if (deleteTarget.kind === "event") deleteEvent(deleteTarget.id);
-    else deleteTrip(deleteTarget.id);
+    setActionError("");
+    try {
+      const url = deleteTarget.kind === "event" ? `/api/events/${deleteTarget.id}` : `/api/trips/${deleteTarget.id}`;
+      const res = await fetch(url, { method: "DELETE", credentials: "include" });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setActionError(data.error ?? "Could not delete.");
+      }
+    } catch {
+      setActionError("Network error deleting.");
+    }
     setDeleteTarget(null);
     refresh();
   }
 
-  if (authed === null) {
+  if (loading) {
     return <div className="min-h-screen bg-ink" />;
   }
 
-  if (!authed) {
-    return <AdminLogin onSuccess={() => setAuthed(true)} />;
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-ink">
+        <section className="max-w-md mx-auto px-6 pt-24 pb-24 text-center">
+          <p className="text-white/60 text-[15px] mb-5">Sign in with an admin account to continue.</p>
+          <Link
+            href="/login?redirect=/admin"
+            className="inline-block bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full"
+          >
+            Sign in
+          </Link>
+        </section>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-ink">
+        <section className="max-w-md mx-auto px-6 pt-24 pb-24 text-center">
+          <p className="text-white/60 text-[15px] mb-5">
+            You're signed in as {user.email}, but this account doesn't have admin access.
+          </p>
+          <Link href="/" className="text-fuchsia-400 text-[14px] font-medium">
+            Back to site
+          </Link>
+        </section>
+      </div>
+    );
   }
 
   return (
@@ -128,13 +205,7 @@ export default function AdminPage() {
             <Link href="/" className="text-[12px] text-white/50 hover:text-white/80 transition-colors">
               View site
             </Link>
-            <button
-              onClick={handleSignOut}
-              className="flex items-center gap-1.5 text-[12px] text-white/50 hover:text-white/80 transition-colors"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              Sign out
-            </button>
+            <span className="text-[12px] text-white/40">{user.email}</span>
           </div>
         </div>
 
@@ -156,6 +227,12 @@ export default function AdminPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-5 py-6">
+        {actionError && (
+          <div className="mb-4 text-[13px] text-rose-400 bg-rose-400/10 border border-rose-400/20 rounded-xl px-4 py-2.5">
+            {actionError}
+          </div>
+        )}
+
         {tab === "Overview" && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -166,9 +243,8 @@ export default function AdminPage() {
               <StatTile label="Members" value={stats.memberships} icon={Crown} accent="fuchsia" />
             </div>
             <p className="text-[12px] text-white/35 leading-relaxed max-w-xl">
-              This data is read from this browser&apos;s local storage — there&apos;s no shared database yet, so
-              these figures only reflect activity that happened on this device. Event and trip changes made here
-              now show up live across the site (home, listings, search, and detail pages) in this browser.
+              Events, trips, and users are live from the database — changes here show up for every visitor
+              immediately. Tickets and memberships are still per-device for now.
             </p>
           </div>
         )}
@@ -239,18 +315,18 @@ export default function AdminPage() {
           <div>
             <h1 className="font-display text-[17px] font-semibold tracking-tight mb-4">Users</h1>
             <div className="rounded-2xl bg-panel border border-white/10 overflow-hidden">
-              {users.length === 0 && <EmptyRow label="No accounts registered on this device yet." />}
-              {users.map((u) => (
+              {adminUsers.length === 0 && <EmptyRow label="No accounts registered yet." />}
+              {adminUsers.map((u) => (
                 <div
-                  key={u.email}
+                  key={u.id}
                   className="flex items-center justify-between px-4 py-3 border-b border-white/5 last:border-0"
                 >
                   <div>
-                    <p className="text-[13px] text-white font-medium">{u.name}</p>
+                    <p className="text-[13px] text-white font-medium">{u.name ?? "—"}</p>
                     <p className="text-[12px] text-white/45">{u.email}</p>
                   </div>
                   <span className="text-[11px] px-2 py-1 rounded-full bg-white/5 text-white/50 capitalize">
-                    {u.provider}
+                    {u.via_google ? "google" : "password"}
                   </span>
                 </div>
               ))}
@@ -260,6 +336,10 @@ export default function AdminPage() {
 
         {tab === "Bookings" && (
           <div className="space-y-6">
+            <p className="text-[12px] text-white/35 -mt-1">
+              Tickets and memberships are still tracked per-device (not yet in the database), so this list
+              only reflects activity from this browser.
+            </p>
             <div>
               <h1 className="font-display text-[17px] font-semibold tracking-tight mb-4">Tickets</h1>
               <div className="rounded-2xl bg-panel border border-white/10 overflow-hidden">
@@ -312,12 +392,7 @@ export default function AdminPage() {
           kind="event"
           initial={editingEvent === "new" ? undefined : editingEvent}
           onClose={() => setEditingEvent(null)}
-          onSave={(draft) => {
-            if (editingEvent === "new") createEvent(draft);
-            else updateEvent(editingEvent.id, draft);
-            setEditingEvent(null);
-            refresh();
-          }}
+          onSave={handleSaveEvent}
         />
       )}
 
@@ -326,12 +401,7 @@ export default function AdminPage() {
           kind="trip"
           initial={editingTrip === "new" ? undefined : editingTrip}
           onClose={() => setEditingTrip(null)}
-          onSave={(draft) => {
-            if (editingTrip === "new") createTrip(draft);
-            else updateTrip(editingTrip.id, draft);
-            setEditingTrip(null);
-            refresh();
-          }}
+          onSave={handleSaveTrip}
         />
       )}
 

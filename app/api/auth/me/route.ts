@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const session = await verifySession(token);
   if (!session) return NextResponse.json({ ok: true, user: null });
 
-  const rows = await sql`SELECT id, email, name FROM users WHERE id = ${session.userId} LIMIT 1`;
+  const rows = await sql`SELECT id, email, name, is_admin FROM users WHERE id = ${session.userId} LIMIT 1`;
   const user = rows[0] ?? null;
   return NextResponse.json({ ok: true, user });
 }

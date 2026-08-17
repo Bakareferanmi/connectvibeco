@@ -6,6 +6,7 @@ export interface User {
   id?: number;
   name: string;
   email: string;
+  isAdmin?: boolean;
   avatarUrl?: string;
   avatarPreset?: string;
   pronouns?: string;
@@ -79,7 +80,7 @@ async function fetchMe(): Promise<User | null> {
     const data = await res.json();
     if (!data.ok || !data.user) return null;
     const extras = readProfileExtras(data.user.email);
-    return { ...data.user, ...extras };
+    return { ...data.user, isAdmin: !!data.user.is_admin, ...extras };
   } catch {
     return null;
   }
@@ -128,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, error: data.error ?? "Incorrect email or password." };
       }
       const extras = readProfileExtras(data.user.email);
-      setUser({ ...data.user, ...extras });
+      setUser({ ...data.user, isAdmin: !!data.user.is_admin, ...extras });
       return { success: true };
     } catch {
       return { success: false, error: "Network error. Please try again." };
