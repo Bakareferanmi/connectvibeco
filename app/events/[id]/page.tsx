@@ -1,16 +1,17 @@
 import EventDetailView from "@/components/EventDetailView";
-import { EVENTS } from "@/lib/data";
+import { sql } from "@/lib/db";
 
-export function generateStaticParams() {
-  return EVENTS.map((e) => ({ id: e.id }));
-}
+export const dynamic = "force-dynamic";
 
-export function generateMetadata({ params }: { params: { id: string } }) {
-  const event = EVENTS.find((e) => e.id === params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const rows = await sql`SELECT title, description FROM events WHERE id = ${id} LIMIT 1`;
+  const event = rows[0];
   if (!event) return { title: "Connect Vibe Co" };
   return { title: `${event.title}, Connect Vibe Co`, description: event.description };
 }
 
-export default function EventDetailPage({ params }: { params: { id: string } }) {
-  return <EventDetailView id={params.id} />;
+export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <EventDetailView id={id} />;
 }

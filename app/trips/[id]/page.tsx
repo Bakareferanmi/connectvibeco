@@ -1,16 +1,17 @@
 import TripDetailView from "@/components/TripDetailView";
-import { TRIPS } from "@/lib/data";
+import { sql } from "@/lib/db";
 
-export function generateStaticParams() {
-  return TRIPS.map((t) => ({ id: t.id }));
-}
+export const dynamic = "force-dynamic";
 
-export function generateMetadata({ params }: { params: { id: string } }) {
-  const trip = TRIPS.find((t) => t.id === params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const rows = await sql`SELECT title, description FROM trips WHERE id = ${id} LIMIT 1`;
+  const trip = rows[0];
   if (!trip) return { title: "Connect Vibe Co" };
   return { title: `${trip.title}, Connect Vibe Co`, description: trip.description };
 }
 
-export default function TripDetailPage({ params }: { params: { id: string } }) {
-  return <TripDetailView id={params.id} />;
+export default async function TripDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <TripDetailView id={id} />;
 }

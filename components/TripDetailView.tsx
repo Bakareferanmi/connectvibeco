@@ -10,8 +10,6 @@ import SaveButton from "@/components/SaveButton";
 import BookButton from "@/components/BookButton";
 import EventGallery from "@/components/EventGallery";
 import TicketStatus from "@/components/TicketStatus";
-import { TRIPS as STATIC_TRIPS } from "@/lib/data";
-import { getTrips } from "@/lib/adminStore";
 import type { Accent, TripListing } from "@/lib/types";
 
 const ACCENTS: Record<Accent, { text: string; bg: string }> = {
@@ -23,12 +21,17 @@ const ACCENTS: Record<Accent, { text: string; bg: string }> = {
 const LOW_SPOTS_THRESHOLD = 3;
 
 export default function TripDetailView({ id }: { id: string }) {
-  const [trips, setTrips] = useState<TripListing[]>(STATIC_TRIPS);
+  const [trips, setTrips] = useState<TripListing[]>([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setTrips(getTrips());
-    setReady(true);
+    fetch("/api/trips")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setTrips(data.trips);
+      })
+      .catch(() => {})
+      .finally(() => setReady(true));
   }, []);
 
   const trip = trips.find((t) => t.id === id);

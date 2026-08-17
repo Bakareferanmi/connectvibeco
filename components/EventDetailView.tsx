@@ -11,8 +11,6 @@ import SaveButton from "@/components/SaveButton";
 import BookButton from "@/components/BookButton";
 import EventGallery from "@/components/EventGallery";
 import TicketStatus from "@/components/TicketStatus";
-import { EVENTS as STATIC_EVENTS } from "@/lib/data";
-import { getEvents } from "@/lib/adminStore";
 import type { Accent, EventListing } from "@/lib/types";
 
 const ACCENTS: Record<Accent, { text: string }> = {
@@ -24,12 +22,17 @@ const ACCENTS: Record<Accent, { text: string }> = {
 const LOW_SPOTS_THRESHOLD = 3;
 
 export default function EventDetailView({ id }: { id: string }) {
-  const [events, setEvents] = useState<EventListing[]>(STATIC_EVENTS);
+  const [events, setEvents] = useState<EventListing[]>([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setEvents(getEvents());
-    setReady(true);
+    fetch("/api/events")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setEvents(data.events);
+      })
+      .catch(() => {})
+      .finally(() => setReady(true));
   }, []);
 
   const event = events.find((e) => e.id === id);
