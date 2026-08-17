@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 export interface User {
+  id?: number;
   name: string;
   email: string;
   avatarUrl?: string;
@@ -16,11 +17,6 @@ export interface User {
   instagram?: string;
   twitter?: string;
   tiktok?: string;
-}
-
-interface StoredUser extends User {
-  password: string | null;
-  provider: "password" | "google";
 }
 
 interface ProfileUpdates {
@@ -37,50 +33,56 @@ interface ProfileUpdates {
   tiktok?: string;
 }
 
+interface AuthResult {
+  success: boolean;
+  error?: string;
+}
+
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
-  signup: (name: string, email: string, password: string) => { success: boolean; error?: string };
-  login: (email: string, password: string) => { success: boolean; error?: string };
-  loginWithGoogle: () => { success: boolean };
-  logout: () => void;
+  signup: (name: string, email: string, password: string) => Promise<AuthResult>;
+  login: (email: string, password: string) => Promise<AuthResult>;
+  loginWithGoogle: () => Promise<AuthResult>;
+  logout: () => Promise<void>;
   updateProfile: (updates: ProfileUpdates) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const USERS_KEY = "cvc_users";
-const SESSION_KEY = "cvc_session";
+// Extended profile fields aren't in the DB yet — kept client-side for now,
+// merged on top of the real server identity. Move these into `users` columns
+// (and a PATCH /api/auth/me route) as a follow-up.
+const PROFILE_KEY = "cvc_profile_extras";
 
-function getUsers(): StoredUser[] {
+function readProfileExtras(email: string): ProfileUpdates {
   try {
-    const raw = localStorage.getItem(USERS_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const raw = localStorage.getItem(`${PROFILE_KEY}:${email.toLowerCase()}`);
+    return raw ? JSON.parse(raw) : {};
   } catch {
-    return [];
+    return {};
   }
 }
 
-function saveUsers(users: StoredUser[]) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+function writeProfileExtras(email: string, updates: ProfileUpdates) {
+  try {
+    localStorage.setItem(`${PROFILE_KEY}:${email.toLowerCase()}`, JSON.stringify(updates));
+  } catch {
+    // storage unavailable - ignore
+  }
 }
 
-function toPublicUser(u: StoredUser): User {
-  return {
-    name: u.name,
-    email: u.email,
-    avatarUrl: u.avatarUrl,
-    avatarPreset: u.avatarPreset,
-    pronouns: u.pronouns,
-    orientation: u.orientation,
-    bio: u.bio,
-    age: u.age,
-    city: u.city,
-    interests: u.interests,
-    instagram: u.instagram,
-    twitter: u.twitter,
-    tiktok: u.tiktok,
-  };
+async function fetchMe(): Promise<User | null> {
+  try {
+    const res = await fetch("/api/auth/me", { credentials: "include" });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.ok || !data.user) return null;
+    const extras = readProfileExtras(data.user.email);
+    return { ...data.user, ...extras };
+  } catch {
+    return null;
+  }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -88,111 +90,73 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(SESSION_KEY);
-      if (raw) setUser(JSON.parse(raw));
-    } catch {
-      // ignore
-    }
-    setLoading(false);
+    fetchMe().then((u) => {
+      setUser(u);
+      setLoading(false);
+    });
   }, []);
 
-  function signup(name: string, email: string, password: string) {
-    const users = getUsers();
-    const exists = users.some((u) => u.email.toLowerCase() === email.toLowerCase());
-    if (exists) {
-      return { success: false, error: "An account with that email already exists." };
-    }
-    const newUser: StoredUser = { name, email, password, provider: "password" };
-    saveUsers([...users, newUser]);
-    const publicUser: User = { name, email };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
-    setUser(publicUser);
-    return { success: true };
-  }
-
-  function login(email: string, password: string) {
-    const users = getUsers();
-    const match = users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.provider === "password" && u.password === password
-    );
-    if (!match) {
-      return { success: false, error: "Incorrect email or password." };
-    }
-    const publicUser = toPublicUser(match);
-    localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
-    setUser(publicUser);
-    return { success: true };
-  }
-
-  function loginWithGoogle() {
-    const users = getUsers();
-    const existing = users.find((u) => u.email.toLowerCase() === "alex.rivera@gmail.com");
-    if (existing) {
-      const publicUser = toPublicUser(existing);
-      localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
-      setUser(publicUser);
+  async function signup(name: string, email: string, password: string): Promise<AuthResult> {
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        return { success: false, error: data.error ?? "Could not create account." };
+      }
+      setUser(data.user);
       return { success: true };
+    } catch {
+      return { success: false, error: "Network error. Please try again." };
     }
-    const demoUser: StoredUser = {
-      name: "Alex Rivera",
-      email: "alex.rivera@gmail.com",
-      password: null,
-      provider: "google",
-    };
-    saveUsers([...users, demoUser]);
-    const publicUser: User = { name: demoUser.name, email: demoUser.email };
-    localStorage.setItem(SESSION_KEY, JSON.stringify(publicUser));
-    setUser(publicUser);
-    return { success: true };
+  }
+
+  async function login(email: string, password: string): Promise<AuthResult> {
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        return { success: false, error: data.error ?? "Incorrect email or password." };
+      }
+      const extras = readProfileExtras(data.user.email);
+      setUser({ ...data.user, ...extras });
+      return { success: true };
+    } catch {
+      return { success: false, error: "Network error. Please try again." };
+    }
+  }
+
+  // Real Google OAuth isn't wired up yet — flagging clearly rather than
+  // quietly keeping the old mock. Wire this to a proper OAuth provider
+  // (e.g. NextAuth with a Google provider) before relying on it.
+  async function loginWithGoogle(): Promise<AuthResult> {
+    return { success: false, error: "Google sign-in isn't connected yet." };
   }
 
   function updateProfile(updates: ProfileUpdates) {
     setUser((current) => {
       if (!current) return current;
-      const updated: User = {
-        ...current,
-        avatarUrl: updates.avatarUrl,
-        avatarPreset: updates.avatarPreset,
-        pronouns: updates.pronouns,
-        orientation: updates.orientation,
-        bio: updates.bio,
-        age: updates.age,
-        city: updates.city,
-        interests: updates.interests,
-        instagram: updates.instagram,
-        twitter: updates.twitter,
-        tiktok: updates.tiktok,
-      };
-      localStorage.setItem(SESSION_KEY, JSON.stringify(updated));
-
-      const users = getUsers();
-      const nextUsers = users.map((u) =>
-        u.email.toLowerCase() === current.email.toLowerCase()
-          ? {
-              ...u,
-              avatarUrl: updates.avatarUrl,
-              avatarPreset: updates.avatarPreset,
-              pronouns: updates.pronouns,
-              orientation: updates.orientation,
-              bio: updates.bio,
-              age: updates.age,
-              city: updates.city,
-              interests: updates.interests,
-              instagram: updates.instagram,
-              twitter: updates.twitter,
-              tiktok: updates.tiktok,
-            }
-          : u
-      );
-      saveUsers(nextUsers);
-
+      const updated: User = { ...current, ...updates };
+      writeProfileExtras(current.email, updates);
       return updated;
     });
   }
 
-  function logout() {
-    localStorage.removeItem(SESSION_KEY);
+  async function logout() {
+    try {
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    } catch {
+      // ignore network errors on logout
+    }
     setUser(null);
   }
 
