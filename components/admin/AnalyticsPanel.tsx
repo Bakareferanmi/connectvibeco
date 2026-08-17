@@ -5,12 +5,7 @@ import { AlertTriangle, DollarSign, Ticket as TicketIcon, TrendingUp, Crown, Eye
 import StatTile from "@/components/admin/StatTile";
 import BarChart from "@/components/admin/BarChart";
 import DonutChart from "@/components/admin/DonutChart";
-import {
-  getAllBookings,
-  getAllMemberships,
-  type AdminBookingRow,
-  type AdminMembershipRow,
-} from "@/lib/adminStore";
+import type { AdminBookingRow, AdminMembershipRow } from "@/lib/adminStore";
 import { getVisitsByDay, getTotalVisits, type VisitDay } from "@/lib/visits";
 import { computeAnalytics } from "@/lib/analytics";
 import type { EventListing, TripListing } from "@/lib/types";
@@ -33,8 +28,8 @@ export default function AnalyticsPanel() {
   useEffect(() => {
     fetch("/api/events").then((r) => r.json()).then((d) => d.ok && setEvents(d.events)).catch(() => {});
     fetch("/api/trips").then((r) => r.json()).then((d) => d.ok && setTrips(d.trips)).catch(() => {});
-    setBookings(getAllBookings());
-    setMemberships(getAllMemberships());
+    fetch("/api/admin/bookings", { credentials: "include" }).then((r) => r.json()).then((d) => d.ok && setBookings(d.bookings)).catch(() => {});
+    fetch("/api/admin/memberships", { credentials: "include" }).then((r) => r.json()).then((d) => d.ok && setMemberships(d.memberships)).catch(() => {});
     setVisits(getVisitsByDay());
     setTotalVisits(getTotalVisits());
   }, []);
@@ -179,8 +174,8 @@ export default function AnalyticsPanel() {
       )}
 
       <p className="text-[12px] text-white/35 leading-relaxed max-w-xl">
-        Calculated from this browser&apos;s local storage — bookings, memberships, and visits made on other
-        devices aren&apos;t counted.
+        Bookings and memberships are calculated from the database across all devices. Site visits are still
+        counted per-browser.
       </p>
     </div>
   );

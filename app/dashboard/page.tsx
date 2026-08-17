@@ -118,18 +118,14 @@ export default function DashboardPage() {
       setSavedIds([]);
       return;
     }
-    try {
-      const rawTickets = localStorage.getItem(`connectvibe:bookings:${user.email}`);
-      setTickets(rawTickets ? JSON.parse(rawTickets) : []);
-    } catch {
-      setTickets([]);
-    }
-    try {
-      const rawSaved = localStorage.getItem(`connectvibe:saved:${user.email}`);
-      setSavedIds(rawSaved ? JSON.parse(rawSaved) : []);
-    } catch {
-      setSavedIds([]);
-    }
+    fetch("/api/bookings", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => data.ok && setTickets(data.tickets))
+      .catch(() => setTickets([]));
+    fetch("/api/saved", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => data.ok && setSavedIds(data.savedIds))
+      .catch(() => setSavedIds([]));
   }, [user]);
 
   if (loading || !dataReady) return <DashboardSkeleton />;

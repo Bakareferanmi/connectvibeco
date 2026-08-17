@@ -26,12 +26,12 @@ export default function SavedPage() {
       setSavedIds([]);
       return;
     }
-    try {
-      const raw = localStorage.getItem(`connectvibe:saved:${user.email}`);
-      setSavedIds(raw ? JSON.parse(raw) : []);
-    } catch {
-      setSavedIds([]);
-    }
+    fetch("/api/saved", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setSavedIds(data.savedIds);
+      })
+      .catch(() => setSavedIds([]));
   }, [user]);
 
   const savedEvents = events.filter((e) => savedIds.includes(e.id));

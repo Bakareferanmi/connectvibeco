@@ -25,12 +25,12 @@ export default function BookingsPage() {
       setTickets([]);
       return;
     }
-    try {
-      const raw = localStorage.getItem(`connectvibe:bookings:${user.email}`);
-      setTickets(raw ? JSON.parse(raw) : []);
-    } catch {
-      setTickets([]);
-    }
+    fetch("/api/bookings", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setTickets(data.tickets);
+      })
+      .catch(() => setTickets([]));
   }, [user]);
 
   const bookedEvents = events

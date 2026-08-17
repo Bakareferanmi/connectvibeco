@@ -21,7 +21,7 @@ import SettingsPanel from "@/components/admin/SettingsPanel";
 import AnalyticsPanel from "@/components/admin/AnalyticsPanel";
 import ContentPanel from "@/components/admin/ContentPanel";
 import { useAuth } from "@/lib/auth-context";
-import { getAllBookings, getAllMemberships, type AdminBookingRow, type AdminMembershipRow } from "@/lib/adminStore";
+import type { AdminBookingRow, AdminMembershipRow } from "@/lib/adminStore";
 import type { EventListing, TripListing } from "@/lib/types";
 
 const TABS = ["Overview", "Analytics", "Events", "Trips", "Users", "Bookings", "Content", "Socials"] as const;
@@ -61,19 +61,21 @@ export default function AdminPage() {
 
   async function refresh() {
     try {
-      const [eventsRes, tripsRes, usersRes] = await Promise.all([
+      const [eventsRes, tripsRes, usersRes, bookingsRes, membershipsRes] = await Promise.all([
         fetch("/api/events").then((r) => r.json()),
         fetch("/api/trips").then((r) => r.json()),
         fetch("/api/admin/users", { credentials: "include" }).then((r) => r.json()),
+        fetch("/api/admin/bookings", { credentials: "include" }).then((r) => r.json()),
+        fetch("/api/admin/memberships", { credentials: "include" }).then((r) => r.json()),
       ]);
       if (eventsRes.ok) setEvents(eventsRes.events);
       if (tripsRes.ok) setTrips(tripsRes.trips);
       if (usersRes.ok) setAdminUsers(usersRes.users);
+      if (bookingsRes.ok) setBookings(bookingsRes.bookings);
+      if (membershipsRes.ok) setMemberships(membershipsRes.memberships);
     } catch {
       setActionError("Could not load admin data.");
     }
-    setBookings(getAllBookings());
-    setMemberships(getAllMemberships());
   }
 
   useEffect(() => {
@@ -243,8 +245,8 @@ export default function AdminPage() {
               <StatTile label="Members" value={stats.memberships} icon={Crown} accent="fuchsia" />
             </div>
             <p className="text-[12px] text-white/35 leading-relaxed max-w-xl">
-              Events, trips, and users are live from the database — changes here show up for every visitor
-              immediately. Tickets and memberships are still per-device for now.
+              Events, trips, users, tickets, and memberships are all live from the database — changes here
+              show up for every visitor immediately.
             </p>
           </div>
         )}
@@ -336,10 +338,6 @@ export default function AdminPage() {
 
         {tab === "Bookings" && (
           <div className="space-y-6">
-            <p className="text-[12px] text-white/35 -mt-1">
-              Tickets and memberships are still tracked per-device (not yet in the database), so this list
-              only reflects activity from this browser.
-            </p>
             <div>
               <h1 className="font-display text-[17px] font-semibold tracking-tight mb-4">Tickets</h1>
               <div className="rounded-2xl bg-panel border border-white/10 overflow-hidden">
