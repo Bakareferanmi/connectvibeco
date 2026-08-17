@@ -1,11 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Calendar, MapPin, Ticket as TicketIcon, Bookmark, ArrowRight, Compass } from "lucide-react";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/lib/auth-context";
-import { getEvents, getTrips } from "@/lib/adminStore";
+import type { EventListing, TripListing } from "@/lib/types";
 
 interface DashboardItem {
   id: string;
@@ -16,9 +17,9 @@ interface DashboardItem {
   href: string;
 }
 
-function buildAllItems(): DashboardItem[] {
+function toItems(events: EventListing[], trips: TripListing[]): DashboardItem[] {
   return [
-    ...getEvents().map((e) => ({
+    ...events.map((e) => ({
       id: e.id,
       title: e.title,
       when: `${e.date} · ${e.time}`,
@@ -26,7 +27,7 @@ function buildAllItems(): DashboardItem[] {
       image: e.images?.[0],
       href: `/events/${e.id}`,
     })),
-    ...getTrips().map((t) => ({
+    ...trips.map((t) => ({
       id: t.id,
       title: t.title,
       when: t.dates,
@@ -90,41 +91,48 @@ function DashboardSkeleton() {
   );
 }
 
-function DashboardContent({ email }: { email: string }) {
-  const bookingsKey = `connectvibe:bookings:${email}`;
-  const savedKey = `connectvibe:saved:${email}`;
-
-  const tickets = (() => {
-    try {
-      const raw = localStorage.getItem(bookingsKey);
-      return raw ? (JSON.parse(raw) as { itemId: string }[]) : [];
-    } catch {
-      return [];
-    }
-  })();
-
-  const savedIds = (() => {
-    try {
-      const raw = localStorage.getItem(savedKey);
-      return raw ? (JSON.parse(raw) as string[]) : [];
-    } catch {
-      return [];
-    }
-  })();
-
-  const allItems = buildAllItems();
-  const bookedItems = allItems.filter((i) => tickets.some((t) => t.itemId === i.id));
-  const savedItems = allItems.filter((i) => savedIds.includes(i.id));
-  const bookedOrSavedIds = new Set([...bookedItems.map((i) => i.id), ...savedItems.map((i) => i.id)]);
-  const availableItems = allItems.filter((i) => !bookedOrSavedIds.has(i.id)).slice(0, 6);
-
-  return { bookedItems, savedItems, availableItems };
-}
-
 export default function DashboardPage() {
   const { user, loading } = useAuth();
+  const [events, setEvents] = useState<EventListing[]>([]);
+  const [trips, setTrips] = useState<TripListing[]>([]);
+  const [dataReady, setDataReady] = useState(false);
+  const [tickets, setTickets] = useState<{ itemId: string }[]>([]);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
 
-  if (loading) return <DashboardSkeleton />;
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/events").then((res) => res.json()),
+      fetch("/api/trips").then((res) => res.json()),
+    ])
+      .then(([eventsData, tripsData]) => {
+        if (eventsData.ok) setEvents(eventsData.events);
+        if (tripsData.ok) setTrips(tripsData.trips);
+      })
+      .catch(() => {})
+      .finally(() => setDataReady(true));
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setTickets([]);
+      setSavedIds([]);
+      return;
+    }
+    try {
+      const rawTickets = localStorage.getItem(`connectvibe:bookings:${user.email}`);
+      setTickets(rawTickets ? JSON.parse(rawTickets) : []);
+    } catch {
+      setTickets([]);
+    }
+    try {
+      const rawSaved = localStorage.getItem(`connectvibe:saved:${user.email}`);
+      setSavedIds(rawSaved ? JSON.parse(rawSaved) : []);
+    } catch {
+      setSavedIds([]);
+    }
+  }, [user]);
+
+  if (loading || !dataReady) return <DashboardSkeleton />;
 
   if (!user) {
     return (
@@ -144,7 +152,11 @@ export default function DashboardPage() {
     );
   }
 
-  const { bookedItems, savedItems, availableItems } = DashboardContent({ email: user.email });
+  const allItems = toItems(events, trips);
+  const bookedItems = allItems.filter((i) => tickets.some((t) => t.itemId === i.id));
+  const savedItems = allItems.filter((i) => savedIds.includes(i.id));
+  const bookedOrSavedIds = new Set([...bookedItems.map((i) => i.id), ...savedItems.map((i) => i.id)]);
+  const availableItems = allItems.filter((i) => !bookedOrSavedIds.has(i.id)).slice(0, 6);
   const firstName = user.name.split(" ")[0];
 
   return (

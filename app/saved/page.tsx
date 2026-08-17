@@ -7,20 +7,18 @@ import TicketCard from "@/components/TicketCard";
 import TripCard from "@/components/TripCard";
 import Footer from "@/components/Footer";
 import Nav from "@/components/Nav";
-import { EVENTS as STATIC_EVENTS, TRIPS as STATIC_TRIPS } from "@/lib/data";
-import { getEvents, getTrips } from "@/lib/adminStore";
 import type { EventListing, TripListing } from "@/lib/types";
 import { useAuth } from "@/lib/auth-context";
 
 export default function SavedPage() {
   const { user } = useAuth();
   const [savedIds, setSavedIds] = useState<string[]>([]);
-  const [events, setEvents] = useState<EventListing[]>(STATIC_EVENTS);
-  const [trips, setTrips] = useState<TripListing[]>(STATIC_TRIPS);
+  const [events, setEvents] = useState<EventListing[]>([]);
+  const [trips, setTrips] = useState<TripListing[]>([]);
 
   useEffect(() => {
-    setEvents(getEvents());
-    setTrips(getTrips());
+    fetch("/api/events").then((res) => res.json()).then((data) => data.ok && setEvents(data.events)).catch(() => {});
+    fetch("/api/trips").then((res) => res.json()).then((data) => data.ok && setTrips(data.trips)).catch(() => {});
   }, []);
 
   useEffect(() => {
