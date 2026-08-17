@@ -34,6 +34,7 @@ function AuthForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function switchMode(next: Mode) {
     setMode(next);
@@ -46,31 +47,40 @@ function AuthForm() {
     router.push(redirect || "/dashboard");
   }
 
-  function handleGoogle() {
-    loginWithGoogle();
+  async function handleGoogle() {
+    setError("");
+    const result = await loginWithGoogle();
+    if (!result.success) {
+      setError(result.error ?? "Google sign-in isn't available yet.");
+      return;
+    }
     goToDestination();
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
     if (mode === "signup") {
-      if (!name.trim() || !email.trim() || password.length < 6) {
-        setError("Fill in your name, email, and a password of at least 6 characters.");
+      if (!name.trim() || !email.trim() || password.length < 8) {
+        setError("Fill in your name, email, and a password of at least 8 characters.");
         return;
       }
       if (password !== confirmPassword) {
         setError("Passwords don't match.");
         return;
       }
-      const result = signup(name.trim(), email.trim(), password);
+      setSubmitting(true);
+      const result = await signup(name.trim(), email.trim(), password);
+      setSubmitting(false);
       if (!result.success) {
         setError(result.error ?? "Something went wrong.");
         return;
       }
     } else {
-      const result = login(email.trim(), password);
+      setSubmitting(true);
+      const result = await login(email.trim(), password);
+      setSubmitting(false);
       if (!result.success) {
         setError(result.error ?? "Something went wrong.");
         return;
@@ -174,7 +184,7 @@ function AuthForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-panel border border-white/10 rounded-xl px-4 py-3 pr-11 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
-                placeholder={mode === "signup" ? "At least 6 characters" : "Your password"}
+                placeholder={mode === "signup" ? "At least 8 characters" : "Your password"}
               />
               <button
                 type="button"
@@ -219,18 +229,13 @@ function AuthForm() {
 
           <button
             type="submit"
-            className="w-full bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full mt-2"
+            disabled={submitting}
+            className="w-full bg-fuchsia-500 hover:bg-fuchsia-400 transition-colors text-white text-[14px] font-medium px-6 py-3 rounded-full mt-2 disabled:opacity-60"
           >
-            {mode === "login" ? "Log in" : "Sign up"}
+            {submitting ? "Please wait…" : mode === "login" ? "Log in" : "Sign up"}
           </button>
         </form>
       </section>
-
-      {mode === "signup" && (
-        <p className="text-center text-[12px] text-white/50 pb-10 px-6">
-          This is a demo account system. Don&apos;t use a real password.
-        </p>
-      )}
     </div>
   );
 }
