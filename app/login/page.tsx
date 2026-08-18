@@ -176,7 +176,14 @@ function AuthForm() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-[13px] text-white/50 mb-1.5">Password</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label htmlFor="password" className="block text-[13px] text-white/50">Password</label>
+              {mode === "login" && (
+                <a href="/forgot-password" className="text-[12px] text-fuchsia-400 hover:text-fuchsia-300 transition-colors">
+                  Forgot password?
+                </a>
+              )}
+            </div>
             <div className="relative">
               <input
                 id="password"
