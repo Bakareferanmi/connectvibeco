@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaInstagram, FaFacebookF, FaXTwitter, FaPinterestP, FaThreads, FaTiktok } from "react-icons/fa6";
-import { getSocials, DEFAULT_SOCIALS, type SocialKey } from "@/lib/adminStore";
+import type { SocialKey } from "@/lib/adminStore";
+
+interface SocialLink {
+  key: SocialKey;
+  label: string;
+  href: string;
+  enabled: boolean;
+}
 
 const ICON_MAP: Record<SocialKey, typeof FaInstagram> = {
   instagram: FaInstagram,
@@ -41,10 +48,13 @@ const COLUMNS = [
 ];
 
 export default function Footer() {
-  const [socials, setSocials] = useState(DEFAULT_SOCIALS);
+  const [socials, setSocials] = useState<SocialLink[]>([]);
 
   useEffect(() => {
-    setSocials(getSocials());
+    fetch("/api/socials")
+      .then((res) => res.json())
+      .then((data) => data.ok && setSocials(data.socials))
+      .catch(() => {});
   }, []);
 
   const visibleSocials = socials.filter((s) => s.enabled && s.href.trim());

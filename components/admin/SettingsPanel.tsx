@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useToast } from "@/lib/toast-context";
-import { getSocials, saveSocials, type SocialLink } from "@/lib/adminStore";
+import type { SocialLink } from "@/lib/adminStore";
 
 const inputClass =
   "w-full h-10 rounded-xl bg-ink border border-white/10 px-3 text-[13px] text-white placeholder:text-white/30 focus:outline-none focus:border-fuchsia-500/50 transition-colors";
@@ -10,18 +10,40 @@ const inputClass =
 export default function SettingsPanel() {
   const { showToast } = useToast();
   const [socials, setSocials] = useState<SocialLink[]>([]);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setSocials(getSocials());
+    fetch("/api/socials")
+      .then((res) => res.json())
+      .then((data) => data.ok && setSocials(data.socials))
+      .catch(() => {});
   }, []);
 
   function updateSocial(key: string, updates: Partial<SocialLink>) {
     setSocials((prev) => prev.map((s) => (s.key === key ? { ...s, ...updates } : s)));
   }
 
-  function handleSave() {
-    saveSocials(socials);
-    showToast("Socials updated");
+  async function handleSave() {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/socials", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ socials }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        showToast(data.error ?? "Could not save socials");
+        return;
+      }
+      setSocials(data.socials);
+      showToast("Socials updated");
+    } catch {
+      showToast("Network error saving socials");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -54,9 +76,10 @@ export default function SettingsPanel() {
         ))}
         <button
           onClick={handleSave}
-          className="w-full h-10 rounded-xl bg-fuchsia-500 text-[13px] font-medium text-white hover:bg-fuchsia-400 transition-colors mt-1"
+          disabled={saving}
+          className="w-full h-10 rounded-xl bg-fuchsia-500 text-[13px] font-medium text-white hover:bg-fuchsia-400 transition-colors mt-1 disabled:opacity-60"
         >
-          Save socials
+          {saving ? "Saving…" : "Save socials"}
         </button>
       </div>
     </div>
