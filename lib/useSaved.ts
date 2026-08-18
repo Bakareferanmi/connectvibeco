@@ -3,42 +3,39 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 
-function storageKey(email?: string) {
-  return `connectvibe:saved:${email ?? "guest"}`;
-}
-
-function readSaved(key: string): string[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
 export function useSaved(id: string) {
   const { user } = useAuth();
-  const key = storageKey(user?.email);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    setSaved(readSaved(key).includes(id));
-  }, [id, key]);
+    if (!user) {
+      setSaved(false);
+      return;
+    }
+    fetch("/api/saved", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) setSaved((data.savedIds as string[]).includes(id));
+      })
+      .catch(() => {});
+  }, [id, user]);
 
-  function toggle(e?: React.MouseEvent) {
+  async function toggle(e?: React.MouseEvent) {
     e?.preventDefault();
     e?.stopPropagation();
-    const current = readSaved(key);
-    const next = current.includes(id)
-      ? current.filter((x) => x !== id)
-      : [...current, id];
+    if (!user) return;
     try {
-      localStorage.setItem(key, JSON.stringify(next));
+      const res = await fetch("/api/saved", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ itemId: id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) setSaved(data.saved);
     } catch {
-      // storage unavailable (e.g. private browsing quota) - ignore
+      // network error - leave state unchanged
     }
-    setSaved(next.includes(id));
   }
 
   return { saved, toggle };
