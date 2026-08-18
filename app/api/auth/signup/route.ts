@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { sql } from "@/lib/db";
 import { signSession, SESSION_COOKIE } from "@/lib/auth-server";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
+  const limit = await rateLimit(req, "signup", 5, 600);
+  if (!limit.allowed) return rateLimitResponse();
+
   try {
     const { email, password, name } = await req.json();
 
