@@ -21,7 +21,6 @@ import SettingsPanel from "@/components/admin/SettingsPanel";
 import AnalyticsPanel from "@/components/admin/AnalyticsPanel";
 import ContentPanel from "@/components/admin/ContentPanel";
 import { useAuth } from "@/lib/auth-context";
-import type { AdminBookingRow, AdminMembershipRow } from "@/lib/adminStore";
 import type { EventListing, TripListing } from "@/lib/types";
 
 const TABS = ["Overview", "Analytics", "Events", "Trips", "Users", "Bookings", "Content", "Socials"] as const;
@@ -39,6 +38,27 @@ interface AdminUser {
   name: string | null;
   via_google: boolean;
   created_at: string;
+}
+
+interface AdminBookingRow {
+  ticketId: string;
+  itemId: string;
+  title: string;
+  meta: string;
+  price: string;
+  qty: number;
+  purchasedAt: string;
+  ownerEmail: string;
+}
+
+interface AdminMembershipRow {
+  tierId: string;
+  tierName: string;
+  price: string;
+  period: string;
+  memberNumber: string;
+  joinedAt: string;
+  ownerEmail: string;
 }
 
 export default function AdminPage() {
