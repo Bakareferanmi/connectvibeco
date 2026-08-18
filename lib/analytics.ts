@@ -1,4 +1,4 @@
-import type { AdminBookingRow, AdminMembershipRow } from "@/lib/adminStore";
+import type { AdminBookingRow, AdminMembershipRow } from "@/lib/admin-types";
 import type { EventListing, TripListing } from "@/lib/types";
 
 export function parsePrice(priceStr: string): number {

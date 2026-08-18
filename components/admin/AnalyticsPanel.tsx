@@ -5,10 +5,10 @@ import { AlertTriangle, DollarSign, Ticket as TicketIcon, TrendingUp, Crown, Eye
 import StatTile from "@/components/admin/StatTile";
 import BarChart from "@/components/admin/BarChart";
 import DonutChart from "@/components/admin/DonutChart";
-import type { AdminBookingRow, AdminMembershipRow } from "@/lib/adminStore";
 import { getVisitsByDay, getTotalVisits, type VisitDay } from "@/lib/visits";
 import { computeAnalytics } from "@/lib/analytics";
 import type { EventListing, TripListing } from "@/lib/types";
+import type { AdminBookingRow, AdminMembershipRow } from "@/lib/admin-types";
 
 function formatCurrency(n: number): string {
   return `£${n.toFixed(0)}`;
