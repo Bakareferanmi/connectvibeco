@@ -27,7 +27,8 @@ function AuthForm() {
   const redirect = searchParams.get("redirect");
   const [mode, setMode] = useState<Mode>("login");
 
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -41,6 +42,8 @@ function AuthForm() {
     setError("");
     setPassword("");
     setConfirmPassword("");
+    setFirstName("");
+    setLastName("");
   }
 
   function goToDestination() {
@@ -62,8 +65,8 @@ function AuthForm() {
     setError("");
 
     if (mode === "signup") {
-      if (!name.trim() || !email.trim() || password.length < 8) {
-        setError("Fill in your name, email, and a password of at least 8 characters.");
+      if (!firstName.trim() || !lastName.trim() || !email.trim() || password.length < 8) {
+        setError("Fill in your first name, last name, email, and a password of at least 8 characters.");
         return;
       }
       if (password !== confirmPassword) {
@@ -71,7 +74,8 @@ function AuthForm() {
         return;
       }
       setSubmitting(true);
-      const result = await signup(name.trim(), email.trim(), password);
+      const fullName = `${firstName.trim()} ${lastName.trim()}`;
+      const result = await signup(fullName, email.trim(), password);
       setSubmitting(false);
       if (!result.success) {
         setError(result.error ?? "Something went wrong.");
@@ -152,16 +156,29 @@ function AuthForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === "signup" && (
-            <div>
-              <label htmlFor="name" className="block text-[13px] text-white/50 mb-1.5">Name</label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-panel border border-white/10 rounded-xl px-4 py-3 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
-                placeholder="Jamie Rivers"
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="firstName" className="block text-[13px] text-white/50 mb-1.5">First name</label>
+                <input
+                  id="firstName"
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className="w-full bg-panel border border-white/10 rounded-xl px-4 py-3 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
+                  placeholder="Jamie"
+                />
+              </div>
+              <div>
+                <label htmlFor="lastName" className="block text-[13px] text-white/50 mb-1.5">Last name</label>
+                <input
+                  id="lastName"
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className="w-full bg-panel border border-white/10 rounded-xl px-4 py-3 text-[14px] text-white placeholder-white/30 focus:outline-none focus:border-fuchsia-500/50"
+                  placeholder="Rivers"
+                />
+              </div>
             </div>
           )}
           <div>
