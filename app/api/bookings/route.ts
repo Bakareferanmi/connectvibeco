@@ -36,10 +36,29 @@ export async function POST(req: NextRequest) {
   if (denied) return denied;
 
   try {
-    const { itemId, title, meta, price, qty } = await req.json();
-    if (!itemId || !title || !meta || !price || !qty) {
-      return NextResponse.json({ ok: false, error: "Missing booking details." }, { status: 400 });
+    const { itemId, qty } = await req.json();
+    const parsedQty = Number(qty);
+    if (!itemId || !Number.isInteger(parsedQty) || parsedQty < 1 || parsedQty > 20) {
+      return NextResponse.json({ ok: false, error: "Missing or invalid booking details." }, { status: 400 });
     }
+
+    // Title, meta, and price are looked up server-side from the event/trip
+    // record — never trusted from the client — so a booking always reflects
+    // the real listing price, not whatever the request body claims.
+    const isTrip = itemId.startsWith("trp-");
+    const itemRows = isTrip
+      ? await sql`SELECT title, location, dates, price FROM trips WHERE id = ${itemId} LIMIT 1`
+      : await sql`SELECT title, date, time, location, price FROM events WHERE id = ${itemId} LIMIT 1`;
+    const item = itemRows[0];
+    if (!item) {
+      return NextResponse.json({ ok: false, error: "Event or trip not found." }, { status: 404 });
+    }
+
+    const title = item.title as string;
+    const price = item.price as string;
+    const meta = isTrip
+      ? `${item.location} · ${item.dates}`
+      : `${item.date} · ${item.time} · ${item.location}`;
 
     const existing = await sql`
       SELECT ticket_id AS "ticketId", item_id AS "itemId", title, meta, price, qty, purchased_at AS "purchasedAt"
@@ -55,7 +74,7 @@ export async function POST(req: NextRequest) {
       try {
         const [created] = await sql`
           INSERT INTO tickets (ticket_id, user_id, item_id, title, meta, price, qty)
-          VALUES (${ticketId}, ${session!.userId}, ${itemId}, ${title}, ${meta}, ${price}, ${qty})
+          VALUES (${ticketId}, ${session!.userId}, ${itemId}, ${title}, ${meta}, ${price}, ${parsedQty})
           RETURNING ticket_id AS "ticketId", item_id AS "itemId", title, meta, price, qty, purchased_at AS "purchasedAt"
         `;
         ticket = created;

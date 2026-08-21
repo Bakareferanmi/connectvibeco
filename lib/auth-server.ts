@@ -1,7 +1,18 @@
 import { SignJWT, jwtVerify } from "jose";
 
 const encoder = new TextEncoder();
-const secret = () => encoder.encode(process.env.JWT_SECRET ?? "");
+
+// Throws rather than falling back to an empty-string secret. Signing (or
+// verifying) sessions with "" would mean anyone could forge a valid token —
+// including one with is_admin-granting access — the moment this env var is
+// ever unset (a misconfigured preview deploy, a new environment, etc).
+function secret() {
+  const value = process.env.JWT_SECRET;
+  if (!value) {
+    throw new Error("JWT_SECRET is not set. Refusing to sign or verify sessions with an empty secret.");
+  }
+  return encoder.encode(value);
+}
 
 export interface SessionPayload {
   userId: number;

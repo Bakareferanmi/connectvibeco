@@ -9,76 +9,13 @@ import MembershipModal from "@/components/MembershipModal";
 import { useAuth } from "@/lib/auth-context";
 import { useMembership } from "@/lib/useMembership";
 import { useToast } from "@/lib/toast-context";
-
-type TierAccent = "violet" | "teal" | "magenta";
-
-interface Tier {
-  id: string;
-  name: string;
-  price: string;
-  period: string;
-  perMonth: string;
-  tagline: string;
-  badge?: string;
-  accent: TierAccent;
-  benefits: string[];
-}
+import { TIERS, type Tier, type TierAccent } from "@/lib/membershipTiers";
 
 const ACCENTS: Record<TierAccent, { text: string; bg: string; border: string; ring: string }> = {
   violet: { text: "text-violet-400", bg: "bg-violet-500", border: "border-violet-500/30", ring: "ring-violet-500/40" },
   teal: { text: "text-cyan-400", bg: "bg-cyan-500", border: "border-cyan-500/30", ring: "ring-cyan-500/40" },
   magenta: { text: "text-fuchsia-400", bg: "bg-fuchsia-500", border: "border-fuchsia-500/40", ring: "ring-fuchsia-500/50" },
 };
-
-const TIERS: Tier[] = [
-  {
-    id: "monthly",
-    name: "Monthly",
-    price: "£4.99",
-    period: "/month",
-    perMonth: "£4.99 per month",
-    tagline: "Try it out, cancel anytime",
-    accent: "violet",
-    benefits: [
-      "Priority access to limited-spot events",
-      "Member pricing on select trips",
-      "Early invites before events go public",
-    ],
-  },
-  {
-    id: "quarterly",
-    name: "Quarterly",
-    price: "£12.99",
-    period: "/3 months",
-    perMonth: "£4.33 per month · save 13%",
-    tagline: "The middle ground",
-    badge: "Most popular",
-    accent: "teal",
-    benefits: [
-      "Everything in Monthly",
-      "5% off every booking",
-      "One free guest pass per quarter",
-      "Access to members-only socials",
-    ],
-  },
-  {
-    id: "yearly",
-    name: "Yearly",
-    price: "£39.99",
-    period: "/year",
-    perMonth: "£3.33 per month · save 33%",
-    tagline: "For the regulars",
-    badge: "Best value",
-    accent: "magenta",
-    benefits: [
-      "Everything in Quarterly",
-      "10% off every booking",
-      "Two free guest passes per year",
-      "First pick on wait-listed trips",
-      "A welcome gift when you join",
-    ],
-  },
-];
 
 export default function MembershipPage() {
   const { user } = useAuth();

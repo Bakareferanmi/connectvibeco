@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { requireUser } from "@/lib/require-user";
+import { getTierById } from "@/lib/membershipTiers";
 
 function generateMemberNumber(): string {
   const digits = "0123456789";
@@ -25,10 +26,16 @@ export async function POST(req: NextRequest) {
   if (denied) return denied;
 
   try {
-    const { tierId, tierName, price, period } = await req.json();
-    if (!tierId || !tierName || !price || !period) {
-      return NextResponse.json({ ok: false, error: "Missing membership details." }, { status: 400 });
+    const { tierId } = await req.json();
+
+    // Name/price/period are never trusted from the client — they're looked
+    // up from the canonical tier list so a request can't fabricate a
+    // cheaper (or free) membership.
+    const tier = typeof tierId === "string" ? getTierById(tierId) : undefined;
+    if (!tier) {
+      return NextResponse.json({ ok: false, error: "Unknown membership tier." }, { status: 400 });
     }
+    const { name: tierName, price, period } = tier;
 
     let membership = null;
     for (let attempt = 0; attempt < 5 && !membership; attempt++) {
